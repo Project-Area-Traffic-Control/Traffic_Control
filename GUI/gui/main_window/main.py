@@ -34,10 +34,11 @@ class MainWindow(Toplevel):
     def __init__(self, *args, **kwargs):
         Toplevel.__init__(self, *args, **kwargs)
 
-        self.title("HotinGo - The state of art HMS")
+        self.title("Area Traffic Control")
 
         self.geometry("1024x600")
         self.configure(bg="#5E95FF")
+        # self.attributes('-fullscreen',True)
 
         self.current_window = None
         self.current_window_label = StringVar()
