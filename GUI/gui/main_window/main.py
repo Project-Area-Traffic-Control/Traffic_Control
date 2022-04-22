@@ -36,18 +36,21 @@ class MainWindow(Toplevel):
 
         self.title("Area Traffic Control")
 
-        self.geometry("1024x600")
-        self.configure(bg="#5E95FF")
+        self.geometry("1280x720")
+        self.configure(bg="#E0DADA")
         # self.attributes('-fullscreen',True)
+        self.bind("<Escape>", quit)
+        # self.config(cursor="none") # remove cursor 
+        self.wm_attributes("-topmost", 1)
 
         self.current_window = None
         self.current_window_label = StringVar()
 
         self.canvas = Canvas(
             self,
-            bg="#5E95FF",
-            height=506,
-            width=1012,
+            bg="#5F95FF",
+            height=720,
+            width=250,
             bd=0,
             highlightthickness=0,
             relief="ridge",
@@ -55,14 +58,14 @@ class MainWindow(Toplevel):
 
         self.canvas.place(x=0, y=0)
 
-        self.canvas.create_rectangle(
-            215, 0.0, 1012.0, 506.0, fill="#FFFFFF", outline=""
-        )
+        # self.canvas.create_rectangle(
+        #     250, 0.0, 1030.0, 720.0, fill="#FFFFFF", outline=""
+        # )
 
         # Add a frame rectangle
         self.sidebar_indicator = Frame(self, background="#FFFFFF")
 
-        self.sidebar_indicator.place(x=0, y=133, height=47, width=7)
+        self.sidebar_indicator.place(x=0, y=120, height=60, width=10)
 
         button_image_1 = PhotoImage(file=relative_to_assets("button_home.png"))
         self.dashboard_btn = Button(
@@ -74,9 +77,9 @@ class MainWindow(Toplevel):
             cursor='hand2', activebackground="#5E95FF",
             relief="flat",
         )
-        self.dashboard_btn.place(x=7.0, y=133.0, width=200.0, height=47.0)
+        self.dashboard_btn.place(x=1, y=120.0, width=250.0, height=60.0)
 
-        button_image_2 = PhotoImage(file=relative_to_assets("button_manual.png"))
+        button_image_2 = PhotoImage(file=relative_to_assets("button_setting.png"))
         self.rooms_btn = Button(
             self.canvas,
             image=button_image_2,
@@ -86,19 +89,19 @@ class MainWindow(Toplevel):
             cursor='hand2', activebackground="#5E95FF",
             relief="flat",
         )
-        self.rooms_btn.place(x=7.0, y=183.0, width=200.0, height=47.0)
+        self.rooms_btn.place(x=1, y=180.0, width=250.0, height=60.0)
 
-        button_image_6 = PhotoImage(file=relative_to_assets("button_setting.png"))
-        self.reservations_btn = Button(
-            self.canvas,
-            image=button_image_6,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: self.handle_btn_press(self.reservations_btn, "res"),
-            cursor='hand2', activebackground="#5E95FF",
-            relief="flat",
-        )
-        self.reservations_btn.place(x=7.0, y=233.0, width=200.0, height=47.0)
+        # button_image_6 = PhotoImage(file=relative_to_assets("button_setting.png"))
+        # self.reservations_btn = Button(
+        #     self.canvas,
+        #     image=button_image_6,
+        #     borderwidth=0,
+        #     highlightthickness=0,
+        #     command=lambda: self.handle_btn_press(self.reservations_btn, "res"),
+        #     cursor='hand2', activebackground="#5E95FF",
+        #     relief="flat",
+        # )
+        # self.reservations_btn.place(x=7.0, y=233.0, width=200.0, height=47.0)
 
         # button_image_3 = PhotoImage(file=relative_to_assets("button_3.png"))
         # self.guests_btn = Button(
@@ -138,12 +141,12 @@ class MainWindow(Toplevel):
        
 
         self.canvas.create_text(
-            28.0,
-            21.0,
+            40.0,
+            37.0,
             anchor="nw",
             text="ATC",
             fill="#FFFFFF",
-            font=("Montserrat Bold", 36 * -1),
+            font=("Inter", 40 ,"bold"),
         )
 
 
@@ -195,9 +198,9 @@ class MainWindow(Toplevel):
         # self.windows['dash'].setPlanName("Testt")
 
         self.handle_btn_press(self.dashboard_btn, "dash")
-        self.sidebar_indicator.place(x=0, y=133)
+        self.sidebar_indicator.place(x=0, y=120)
 
-        self.current_window.place(x=200, y=0, width=1024.0, height=600.0)
+        self.current_window.place(x=250, y=0, width=1030.0, height=720.0)
 
         self.current_window.tkraise()
         self.resizable(False, False)
@@ -205,15 +208,6 @@ class MainWindow(Toplevel):
 
     def place_sidebar_indicator(self):
         pass
-
-    def logout(self):
-        confirm = messagebox.askyesno(
-            "Confirm log-out", "Do you really want to log out?"
-        )
-        if confirm == True:
-            user = None
-            self.destroy()
-            login.gui.loginWindow()
 
     def handle_btn_press(self, caller, name):
         # Place the sidebar on respective button
@@ -227,7 +221,7 @@ class MainWindow(Toplevel):
         self.current_window = self.windows.get(name)
 
         # Show the screen of the button pressed
-        self.windows[name].place(x=200, y=0, width=1024, height=600.0)
+        self.windows[name].place(x=250, y=0, width=1030, height=720.0)
 
         # Handle label change
         # current_name = self.windows.get(name)._name.split("!")[-1].capitalize()
@@ -236,3 +230,12 @@ class MainWindow(Toplevel):
     def handle_dashboard_refresh(self):
         # Recreate the dash window
         self.windows["dash"] = Dashboard(self)
+
+    # def logout(self):
+    #     confirm = messagebox.askyesno(
+    #         "Confirm log-out", "Do you really want to log out?"
+    #     )
+    #     if confirm == True:
+    #         user = None
+    #         self.destroy()
+    #         login.gui.loginWindow()
