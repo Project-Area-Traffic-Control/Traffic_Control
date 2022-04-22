@@ -1,8 +1,11 @@
 from pathlib import Path
 import time
 from tkinter.constants import ANCHOR, N
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from gui.main_window.dashboard.junction_image.main import JunctionImage
+# from matplotlib.figure import Figure
+from gui.main_window.dashboard.operation_main.main import OperationMain
+from gui.main_window.dashboard.operation_manual.main import OperationManual
+# from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import Button, Frame, Canvas, Entry, Label, PhotoImage, N, StringVar, messagebox
 # import controller as db_controller
 
@@ -25,111 +28,26 @@ class Dashboard(Frame):
 
         self.configure(bg="#E0DADA")
 
-        self.plan_name=StringVar()
-        self.plan_name.set("ช่วงเช้า 6 - 8 โมง")
-
         self.temp_time = 0
 
-        self.image_auto_off = PhotoImage(file=relative_to_assets("bt_auto_off.png"))
-        self.image_auto_on = PhotoImage(file=relative_to_assets("bt_auto_on.png"))
-        self.image_manual_off = PhotoImage(file=relative_to_assets("bt_manual_off.png"))
-        self.image_manual_on = PhotoImage(file=relative_to_assets("bt_manual_on.png"))
-        self.image_red_off = PhotoImage(file=relative_to_assets("bt_red_off.png"))
-        self.image_red_on = PhotoImage(file=relative_to_assets("bt_red_on.png"))
-        self.image_flashing_off = PhotoImage(file=relative_to_assets("bt_flashing_off.png"))
-        self.image_flashing_on = PhotoImage(file=relative_to_assets("bt_flashing_on.png"))
+        self.operation_windows = {
+            "main" : OperationMain(self),
+            "manual" : OperationManual(self)
+        }
 
-        
+        self.current_operation_window = self.operation_windows["main"]
+        self.current_operation_window.place(x=25, y=25, width=380.0, height=670.0)
 
+        self.current_operation_window.tkraise()
 
-        canvas1 = Canvas(
-            self,
-            bg="#FFFFFF",
-            height=670,
-            width=380,
-            bd=0,
-            highlightthickness=0,
-            relief="ridge",
-        )
-        canvas1.place(x=25, y=25)
-  
-        canvas1.image_text_mode = PhotoImage(file=relative_to_assets("text_mode.png"))
-        canvas1.create_image(190.0, 30.0, image=canvas1.image_text_mode, anchor="n")
-
-        self.button_auto = Button(
-            canvas1,
-            image=self.image_auto_on,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: self.onAuto(),
-            relief="flat",
-            bg="#FFFFFF"
-        )
-        self.button_auto.place(x=190.0, y=95.0, anchor="n")
-
-        self.button_manual = Button(
-            canvas1,
-            image=self.image_manual_off,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: self.onMaual(),
-            relief="flat",
-            bg="#FFFFFF"
-        )
-        self.button_manual.place(x=190.0, y=180.0, anchor="n")
-
-        self.button_red = Button(
-            canvas1,
-            image=self.image_red_off,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: self.onRed(),
-            relief="flat",
-            bg="#FFFFFF"
-        )
-        self.button_red.place(x=190.0, y=265.0, anchor="n")
-
-        self.button_flashing = Button(
-            canvas1,
-            image=self.image_flashing_off,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: self.onFlashing(),
-            relief="flat",
-            bg="#FFFFFF"
-        )
-        self.button_flashing.place(x=190.0, y=350.0, anchor="n")
-        
-        canvas1.image_text_plan = PhotoImage(file=relative_to_assets("text_plan.png"))
-        canvas1.create_image(190.0, 435.0, image=canvas1.image_text_plan, anchor="n")
-
-        label_plan_name = Label(
-            canvas1,
-            anchor="n",
-            font=("Inter", 18 , "bold"),
-            textvariable=self.plan_name,
-            bg="#FFFFFF",  
-            fg="#4F4F4F"
-        )
-        label_plan_name.place(x=190, y=505, anchor="center")
-
-        canvas1.image_text_nowtime = PhotoImage(file=relative_to_assets("text_nowtime.png"))
-        canvas1.create_image(190, 550.0, image=canvas1.image_text_nowtime, anchor="n")
-
-        self.label_timer = Label(
-            canvas1,
-            anchor="n",
-            font=("Inter", 18 ,"bold"),
-            bg="#FFFFFF",  
-            fg="#4F4F4F"
-        )
-        self.label_timer.place(x=190, y=620, anchor="center")
-        self.my_time()
+        junctionImage = JunctionImage(self)
+        junctionImage.place(x=430, y=120, width=575.0, height=575.0)
+        junctionImage.tkraise()
 
 
 
 
-        canvas2 = Canvas(
+        canvas = Canvas(
             self,
             bg="#FFFFFF",
             height=70,
@@ -138,26 +56,26 @@ class Dashboard(Frame):
             highlightthickness=0,
             relief="ridge",
         )
-        canvas2.place(x=430, y=25)
+        canvas.place(x=430, y=25)
 
-        canvas2.image_text_time = PhotoImage(file=relative_to_assets("text_time.png"))
-        canvas2.create_image(25, 35, image=canvas2.image_text_time, anchor="w")
+        canvas.image_text_time = PhotoImage(file=relative_to_assets("text_time.png"))
+        canvas.create_image(25, 35, image=canvas.image_text_time, anchor="w")
 
-        canvas2.entry_image_time = PhotoImage(file=relative_to_assets("entry_time.png"))
-        canvas2.create_image(140.0, 35, image=canvas2.entry_image_time, anchor="w")
+        canvas.entry_image_time = PhotoImage(file=relative_to_assets("entry_time.png"))
+        canvas.create_image(140.0, 35, image=canvas.entry_image_time, anchor="w")
 
-        canvas2.image_text_sec = PhotoImage(file=relative_to_assets("text_sec.png"))
-        canvas2.create_image(265, 35, image=canvas2.image_text_sec, anchor="w")
+        canvas.image_text_sec = PhotoImage(file=relative_to_assets("text_sec.png"))
+        canvas.create_image(265, 35, image=canvas.image_text_sec, anchor="w")
 
-        canvas2.image_state_connect = PhotoImage(file=relative_to_assets("state_disconnected.png"))
-        self.label_state_connect = Label(canvas2, image=canvas2.image_state_connect, bg="#FFFFFF")
+        canvas.image_state_connect = PhotoImage(file=relative_to_assets("state_disconnected.png"))
+        self.label_state_connect = Label(canvas, image=canvas.image_state_connect, bg="#FFFFFF")
         self.label_state_connect.place(x=405, y=35, anchor="w")
 
         self.second=StringVar()
         self.second.set("120")
     
         self.label_time = Label(
-            canvas2,
+            canvas,
             anchor="center",
             font=("Inter", 20 , "bold"),
             textvariable=self.second,
@@ -167,22 +85,23 @@ class Dashboard(Frame):
         self.label_time.place(x=190, y=35, anchor="center")
 
 
+        # canvas3 = Canvas(
+        #     self,
+        #     bg="#FFFFFF",
+        #     height=575,
+        #     width=575,
+        #     bd=0,
+        #     highlightthickness=0,
+        #     relief="ridge",
+        # )
+        # canvas3.place(x=430, y=120)
 
-        canvas3 = Canvas(
-            self,
-            bg="#FFFFFF",
-            height=575,
-            width=575,
-            bd=0,
-            highlightthickness=0,
-            relief="ridge",
-        )
-        canvas3.place(x=430, y=120)
+        # canvas3.image_junction = PhotoImage(file=relative_to_assets("4way0degree.png"))
 
-        canvas3.image_junction = PhotoImage(file=relative_to_assets("4way0degree.png"))
+        # self.label_image_junction = Label(canvas3,image=canvas3.image_junction,bg="#FFFFFF")
+        # self.label_image_junction.place(x=287.5,y=287.5,anchor='center')
 
-        self.label_image_junction = Label(canvas3,image=canvas3.image_junction,bg="#FFFFFF")
-        self.label_image_junction.place(x=287.5,y=287.5,anchor='center')
+
 
 
 
@@ -197,68 +116,15 @@ class Dashboard(Frame):
     def onFlashing(self):
         self.change_img_bt("flashing")
         self.countdown()
+    
+    def navigate(self, name):
+        # Hide all screens
+        for operation_windows in self.operation_windows.values():
+            operation_windows.place_forget()
 
-    def change_img_bt(self,bt):
-        
-        if bt == 'auto':
-            self.button_auto.configure(image=self.image_auto_on)
-            self.button_auto.image = self.image_auto_on
+        # Show the screen of the button pressed
+        self.operation_windows[name].place(x=25, y=25, width=380.0, height=670.0)
 
-            self.button_manual.configure(image=self.image_manual_off)
-            self.button_manual.image = self.image_manual_off
-
-            self.button_red.configure(image=self.image_red_off)
-            self.button_red.image = self.image_red_off
-
-            self.button_flashing.configure(image=self.image_flashing_off)
-            self.button_flashing.image = self.image_flashing_off
-
-        elif bt == 'manual':
-            self.button_auto.configure(image=self.image_auto_off)
-            self.button_auto.image = self.image_auto_off
-
-            self.button_manual.configure(image=self.image_manual_on)
-            self.button_manual.image = self.image_manual_on
-
-            self.button_red.configure(image=self.image_red_off)
-            self.button_red.image = self.image_red_off
-
-            self.button_flashing.configure(image=self.image_flashing_off)
-            self.button_flashing.image = self.image_flashing_off
-
-        elif bt == 'red':
-            self.button_auto.configure(image=self.image_auto_off)
-            self.button_auto.image = self.image_auto_off
-
-            self.button_manual.configure(image=self.image_manual_off)
-            self.button_manual.image = self.image_manual_off
-
-            self.button_red.configure(image=self.image_red_on)
-            self.button_red.image = self.image_red_on
-
-            self.button_flashing.configure(image=self.image_flashing_off)
-            self.button_flashing.image = self.image_flashing_off
-
-        elif bt == 'flashing':
-            self.button_auto.configure(image=self.image_auto_off)
-            self.button_auto.image = self.image_auto_off
-
-            self.button_manual.configure(image=self.image_manual_off)
-            self.button_manual.image = self.image_manual_off
-
-            self.button_red.configure(image=self.image_red_off)
-            self.button_red.image = self.image_red_off
-
-            self.button_flashing.configure(image=self.image_flashing_on)
-            self.button_flashing.image = self.image_flashing_on
-
-       
-    def my_time(self):
-        time_string = time.strftime('%H : %M : %S') # time format 
-        self.label_timer.config(text=time_string)
-        self.label_timer.after(1000,self.my_time) # time delay of 1000 milliseconds 
-
-       
     def click(self):
         print("click....")
 
@@ -276,8 +142,6 @@ class Dashboard(Frame):
     def setPlanName(self,new_name):
         self.plan_name.set(new_name)
     
-    
-
     def countdown(self):
         sec = int(self.second.get())
         
@@ -307,27 +171,6 @@ class Dashboard(Frame):
             #     messagebox.showinfo("Time Countdown", "Time's up ")
             
             temp -= 1
-
-    def countup(self):
-        
-        try:
-            temp =  int(self.second.get())
-        except:
-            print("Please input the right value")
-        while temp < 360:
-     
-            secs = temp
-    
-      
-            self.second.set("{0:3d}".format(secs))
-    
-            self.update()
-            time.sleep(1)
-
-            # if (temp == 0):
-            #     messagebox.showinfo("Time Countdown", "Time's up ")
-            
-            temp += 1
 
 
 

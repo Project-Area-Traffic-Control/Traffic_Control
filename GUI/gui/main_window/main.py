@@ -8,7 +8,7 @@ from tkinter import (
     messagebox,
     StringVar,
 )
-from controller import *
+# from controller import *
 from gui.main_window.dashboard.gui import Dashboard
 from gui.main_window.reservations.main import Reservations
 from gui.main_window.about.main import About
@@ -73,25 +73,25 @@ class MainWindow(Toplevel):
             image=button_image_1,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.handle_btn_press(self.dashboard_btn, "dash"),
+            command=lambda: self.handle_btn_press(self.dashboard_btn, "main"),
             cursor='hand2', activebackground="#5E95FF",
             relief="flat",
         )
         self.dashboard_btn.place(x=1, y=120.0, width=250.0, height=60.0)
 
         button_image_2 = PhotoImage(file=relative_to_assets("button_setting.png"))
-        self.rooms_btn = Button(
+        self.setting_btn = Button(
             self.canvas,
             image=button_image_2,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.handle_btn_press(self.rooms_btn, "roo"),
+            command=lambda: self.handle_btn_press(self.setting_btn, "setting"),
             cursor='hand2', activebackground="#5E95FF",
             relief="flat",
         )
-        self.rooms_btn.place(x=1, y=180.0, width=250.0, height=60.0)
+        self.setting_btn.place(x=1, y=180.0, width=250.0, height=60.0)
 
-        # button_image_6 = PhotoImage(file=relative_to_assets("button_setting.png"))
+        # button_image_6 = PhotoImage(file=relative_to_assets("button_manual.png"))
         # self.reservations_btn = Button(
         #     self.canvas,
         #     image=button_image_6,
@@ -101,7 +101,7 @@ class MainWindow(Toplevel):
         #     cursor='hand2', activebackground="#5E95FF",
         #     relief="flat",
         # )
-        # self.reservations_btn.place(x=7.0, y=233.0, width=200.0, height=47.0)
+        # self.reservations_btn.place(x=1.0, y=240.0, width=250.0, height=60.0)
 
         # button_image_3 = PhotoImage(file=relative_to_assets("button_3.png"))
         # self.guests_btn = Button(
@@ -188,8 +188,8 @@ class MainWindow(Toplevel):
 
         # Loop through windows and place them
         self.windows = {
-            "dash": Dashboard(self),
-            "roo": Rooms(self),
+            "main": Dashboard(self),
+            "setting": Rooms(self),
             "gue": Guests(self),
             "abt": About(self),
             "res": Reservations(self),
@@ -197,7 +197,7 @@ class MainWindow(Toplevel):
 
         # self.windows['dash'].setPlanName("Testt")
 
-        self.handle_btn_press(self.dashboard_btn, "dash")
+        self.handle_btn_press(self.dashboard_btn, "main")
         self.sidebar_indicator.place(x=0, y=120)
 
         self.current_window.place(x=250, y=0, width=1030.0, height=720.0)
