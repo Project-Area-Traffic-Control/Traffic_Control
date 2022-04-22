@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from tkinter import Toplevel, Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox
-from controller import *
+# from controller import *
 from ..main_window.main import mainWindow
 
 OUTPUT_PATH = Path(__file__).parent

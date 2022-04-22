@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from tkinter import Frame, Canvas, Entry, Text, Button, PhotoImage, messagebox
-from controller import *
+# from controller import *
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")

@@ -8,7 +8,7 @@ from tkinter import (
     messagebox,
     StringVar,
 )
-from controller import *
+# from controller import *
 from gui.main_window.dashboard.gui import Dashboard
 from gui.main_window.reservations.main import Reservations
 from gui.main_window.about.main import About

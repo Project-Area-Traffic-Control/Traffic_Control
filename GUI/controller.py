@@ -1,4 +1,4 @@
-import mysql.connector
+# import mysql.connector
 import os
 import matplotlib.pyplot as pt
 
@@ -29,7 +29,7 @@ load_dotenv()  # Imports environemnt variables from the '.env' file
 
 # cursor = connection.cursor(buffered=True)
 
-# SQL functions
+# # SQL functions
 
 
 # def checkUser(username, password=None):

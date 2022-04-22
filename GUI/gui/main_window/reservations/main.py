@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from tkinter import Frame, Canvas, Entry, Text, Button, PhotoImage, messagebox
-from controller import *
+# from controller import *
 # import controller as db_controller
 
 from .add_reservations.gui import AddReservations
@@ -27,7 +27,7 @@ class Reservations(Frame):
     #     self.selected_rid = None
     #     self.reservation_data = db_controller.get_reservations()
 
-    #     self.configure(bg="#FFFFFF")
+    #     self.configure(bg="#000000")
 
     #     # Loop through windows and place them
     #     self.windows = {
@@ -37,7 +37,7 @@ class Reservations(Frame):
     #     }
 
     #     self.current_window = self.windows["add"]
-    #     self.current_window.place(x=0, y=0, width=1013.0, height=506.0)
+    #     self.current_window.place(x=0, y=0, width=1030.0, height=720.0)
 
     #     self.current_window.tkraise()
 
@@ -47,8 +47,8 @@ class Reservations(Frame):
     #         window.place_forget()
 
     #     # Show the screen of the button pressed
-    #     self.windows[name].place(x=0, y=0, width=1013.0, height=506.0)
+    #     self.windows[name].place(x=0, y=0, width=1030.0, height=720.0)
 
     # def refresh_entries(self):
-    #     self.reservation_data = db_controller.get_reservations()
+    #     # self.reservation_data = db_controller.get_reservations()
     #     self.windows.get("view").handle_refresh()
