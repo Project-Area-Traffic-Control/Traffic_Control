@@ -28,112 +28,104 @@ class Dashboard(Frame):
         self.plan_name=StringVar()
         self.plan_name.set("ช่วงเช้า 6 - 8 โมง")
 
-        self.image_auto_off = PhotoImage(file=relative_to_assets("auto_bt_off.png"))
-        self.image_auto_on = PhotoImage(file=relative_to_assets("auto_bt_on.png"))
-        self.image_manual_off = PhotoImage(file=relative_to_assets("manual_bt_off.png"))
-        self.image_manual_on = PhotoImage(file=relative_to_assets("manual_bt_on.png"))
-        self.image_red_off = PhotoImage(file=relative_to_assets("red_bt_off.png"))
-        self.image_red_on = PhotoImage(file=relative_to_assets("red_bt_on.png"))
-        self.image_flashing_off = PhotoImage(file=relative_to_assets("flashing_bt_off.png"))
-        self.image_flashing_on = PhotoImage(file=relative_to_assets("flashing_bt_on.png"))
+        self.temp_time = 0
+
+        self.image_auto_off = PhotoImage(file=relative_to_assets("bt_auto_off.png"))
+        self.image_auto_on = PhotoImage(file=relative_to_assets("bt_auto_on.png"))
+        self.image_manual_off = PhotoImage(file=relative_to_assets("bt_manual_off.png"))
+        self.image_manual_on = PhotoImage(file=relative_to_assets("bt_manual_on.png"))
+        self.image_red_off = PhotoImage(file=relative_to_assets("bt_red_off.png"))
+        self.image_red_on = PhotoImage(file=relative_to_assets("bt_red_on.png"))
+        self.image_flashing_off = PhotoImage(file=relative_to_assets("bt_flashing_off.png"))
+        self.image_flashing_on = PhotoImage(file=relative_to_assets("bt_flashing_on.png"))
+
+        
+
 
         canvas1 = Canvas(
             self,
             bg="#FFFFFF",
-            height=561,
-            width=293,
+            height=670,
+            width=380,
             bd=0,
             highlightthickness=0,
             relief="ridge",
         )
-        canvas1.place(x=21, y=17)
+        canvas1.place(x=25, y=25)
   
-        canvas1.create_text(
-            146.5,
-            35.0,
-            anchor="center",
-            text="โหมดการทำงาน",
-            fill="#5E95FF",
-            font=("Montserrat Bold", 24 * -1),
-        )
+        canvas1.image_text_mode = PhotoImage(file=relative_to_assets("text_mode.png"))
+        canvas1.create_image(190.0, 30.0, image=canvas1.image_text_mode, anchor="n")
 
         self.button_auto = Button(
-            self,
+            canvas1,
             image=self.image_auto_on,
             borderwidth=0,
             highlightthickness=0,
             command=lambda: self.onAuto(),
             relief="flat",
+            bg="#FFFFFF"
         )
-        self.button_auto.place(x=98.0, y=108.0, width=131.0, height=40.0)
+        self.button_auto.place(x=190.0, y=95.0, anchor="n")
 
         self.button_manual = Button(
-            self,
+            canvas1,
             image=self.image_manual_off,
             borderwidth=0,
             highlightthickness=0,
             command=lambda: self.onMaual(),
             relief="flat",
+            bg="#FFFFFF"
         )
-        self.button_manual.place(x=98.0, y=165.0, width=131.0, height=40.0)
+        self.button_manual.place(x=190.0, y=180.0, anchor="n")
 
         self.button_red = Button(
-            self,
+            canvas1,
             image=self.image_red_off,
             borderwidth=0,
             highlightthickness=0,
             command=lambda: self.onRed(),
             relief="flat",
+            bg="#FFFFFF"
         )
-        self.button_red.place(x=98.0, y=222.0, width=131.0, height=40.0)
+        self.button_red.place(x=190.0, y=265.0, anchor="n")
 
         self.button_flashing = Button(
-            self,
+            canvas1,
             image=self.image_flashing_off,
             borderwidth=0,
             highlightthickness=0,
             command=lambda: self.onFlashing(),
             relief="flat",
+            bg="#FFFFFF"
         )
-        self.button_flashing.place(x=98.0, y=279.0, width=131.0, height=40.0)
-
-        canvas1.create_text(
-            146.5,
-            361.0,
-            anchor="center",
-            text="เเผนการทำงานปัจจุบัน",
-            fill="#5E95FF",
-            font=("Montserrat Bold", 24 * -1),
-        )
+        self.button_flashing.place(x=190.0, y=350.0, anchor="n")
+        
+        canvas1.image_text_plan = PhotoImage(file=relative_to_assets("text_plan.png"))
+        canvas1.create_image(190.0, 435.0, image=canvas1.image_text_plan, anchor="n")
 
         label_plan_name = Label(
-            self,
-            anchor="center",
-            font=("Montserrat Bold", 18 * -1),
+            canvas1,
+            anchor="n",
+            font=("Inter", 18 , "bold"),
             textvariable=self.plan_name,
             bg="#FFFFFF",  
             fg="#4F4F4F"
         )
-        label_plan_name.place(x=166.5, y=417,anchor="center")
+        label_plan_name.place(x=190, y=505, anchor="center")
 
-        canvas1.create_text(
-            146.5,
-            470.0,
-            anchor="center",
-            text="เวลาปัจจุบัน",
-            fill="#5E95FF",
-            font=("Montserrat Bold", 24 * -1),
-        )
+        canvas1.image_text_nowtime = PhotoImage(file=relative_to_assets("text_nowtime.png"))
+        canvas1.create_image(190, 550.0, image=canvas1.image_text_nowtime, anchor="n")
 
         self.label_timer = Label(
-            self,
-            anchor="center",
-            font=("Montserrat Bold", 18 * -1),
+            canvas1,
+            anchor="n",
+            font=("Inter", 18 ,"bold"),
             bg="#FFFFFF",  
             fg="#4F4F4F"
         )
-        self.label_timer.place(x=166.5, y=525,anchor="center")
+        self.label_timer.place(x=190, y=620, anchor="center")
         self.my_time()
+
 
 
 
@@ -141,69 +133,58 @@ class Dashboard(Frame):
             self,
             bg="#FFFFFF",
             height=70,
-            width=470,
+            width=575,
             bd=0,
             highlightthickness=0,
             relief="ridge",
         )
-        canvas2.place(x=334, y=17)
+        canvas2.place(x=430, y=25)
 
-        canvas2.create_text(
-            22.0,
-            20.0,
-            anchor="nw",
-            text="ระยะเวลา",
-            fill="#5E95FF",
-            font=("Montserrat Bold", 20 * -1),
-        )
-        canvas2.create_text(
-            232.0,
-            20.0,
-            anchor="nw",
-            text="วินาที",
-            fill="#5E95FF",
-            font=("Montserrat Bold", 20 * -1),
-        )
-
-        canvas2.entry_image_state_connect = PhotoImage(file=relative_to_assets("state_disconnected.png"))
-
-        self.label_state_connect = Label(self,image=canvas2.entry_image_state_connect,bg="#FFFFFF")
-        self.label_state_connect.place(x=688,y=41)
+        canvas2.image_text_time = PhotoImage(file=relative_to_assets("text_time.png"))
+        canvas2.create_image(25, 35, image=canvas2.image_text_time, anchor="w")
 
         canvas2.entry_image_time = PhotoImage(file=relative_to_assets("entry_time.png"))
-        canvas2.create_image(165.0,35.0, image=canvas2.entry_image_time)
+        canvas2.create_image(140.0, 35, image=canvas2.entry_image_time, anchor="w")
+
+        canvas2.image_text_sec = PhotoImage(file=relative_to_assets("text_sec.png"))
+        canvas2.create_image(265, 35, image=canvas2.image_text_sec, anchor="w")
+
+        canvas2.image_state_connect = PhotoImage(file=relative_to_assets("state_disconnected.png"))
+        self.label_state_connect = Label(canvas2, image=canvas2.image_state_connect, bg="#FFFFFF")
+        self.label_state_connect.place(x=405, y=35, anchor="w")
 
         self.second=StringVar()
         self.second.set("120")
     
-        label_time = Label(
-            self,
+        self.label_time = Label(
+            canvas2,
             anchor="center",
-            font=("Montserrat Bold", 20 * -1),
+            font=("Inter", 20 , "bold"),
             textvariable=self.second,
-            bg="#5E95FF",  
+            bg="#528CFF",  
             fg="#FFFFFF"
         )
-        label_time.place(x=479, y=35)
+        self.label_time.place(x=190, y=35, anchor="center")
+
 
 
         canvas3 = Canvas(
             self,
             bg="#FFFFFF",
-            height=470,
-            width=470,
+            height=575,
+            width=575,
             bd=0,
             highlightthickness=0,
             relief="ridge",
         )
-        canvas3.place(x=334, y=108)
+        canvas3.place(x=430, y=120)
 
-        canvas3.entry_image_junction = PhotoImage(file=relative_to_assets("4way0degree.png"))
+        canvas3.image_junction = PhotoImage(file=relative_to_assets("4way0degree.png"))
 
-        self.label_image_junction = Label(self,image=canvas3.entry_image_junction,bg="#FFFFFF",anchor='center')
-        self.label_image_junction.place(x=569,y=346,anchor='center')
+        self.label_image_junction = Label(canvas3,image=canvas3.image_junction,bg="#FFFFFF")
+        self.label_image_junction.place(x=287.5,y=287.5,anchor='center')
 
-        # self.parent.handle_btn_press(self.parent.reservations_btn, "res")
+
 
     def onAuto(self):
         self.change_img_bt("auto")
@@ -273,7 +254,7 @@ class Dashboard(Frame):
 
        
     def my_time(self):
-        time_string = time.strftime('%H:%M:%S') # time format 
+        time_string = time.strftime('%H : %M : %S') # time format 
         self.label_timer.config(text=time_string)
         self.label_timer.after(1000,self.my_time) # time delay of 1000 milliseconds 
 
@@ -294,8 +275,19 @@ class Dashboard(Frame):
     
     def setPlanName(self,new_name):
         self.plan_name.set(new_name)
+    
+    
 
     def countdown(self):
+        sec = int(self.second.get())
+        
+        if sec > 0:
+            sec -= 1
+            self.second.set("{0:3d}".format(sec))
+            self.label_time.config(text=self.second)
+            self.label_time.after(1000,self.countdown)
+
+    def countdown1(self):
         
         try:
             temp =  int(self.second.get())
