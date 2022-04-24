@@ -11,7 +11,7 @@ from tkinter import (
     StringVar,
 )
 # import controller as db_controller
-# import trafficLight_controller as TrafficLight_Controller
+# import trafficLightController as TrafficLightController
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -316,7 +316,7 @@ class Manual3Way(Frame):
 
 def setLight():
     print("Set port 1 to red")
-    # TrafficLight_Controller.setLightOn(1,"r")
+    # TrafficLightController.setLightOn(1,"r")
 
 
 
