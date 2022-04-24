@@ -62,7 +62,7 @@ class OperationMain(Frame):
 
         self.button_auto = Button(
             self,
-            image=self.image_auto_on,
+            image=self.image_auto_off,
             borderwidth=0,
             highlightthickness=0,
             command=lambda: self.onAuto(),
@@ -142,18 +142,26 @@ class OperationMain(Frame):
         self.label_timer.place(x=190, y=620, anchor="center")
         self.my_time()
 
+        self.change_img_bt(self.parent.current_mode)
+
 
     def onAuto(self):
         self.change_img_bt("auto")
-        self.parent.click()
+        self.parent.changeMode("auto")
     def onMaual(self):
         self.change_img_bt("manual")
+        self.parent.changeMode("manual")
+        self.parent.navigate("manual")
         self.parent.change_state_connect("disconnect")
     def onRed(self):
         self.change_img_bt("red")
+        self.parent.changeMode("red")
+
         self.parent.change_state_connect("connect")
     def onFlashing(self):
         self.change_img_bt("flashing")
+        self.parent.changeMode("flashing")
+
         self.parent.countdown()
 
 
@@ -216,7 +224,9 @@ class OperationMain(Frame):
             self.button_flashing.configure(image=self.image_flashing_on)
             self.button_flashing.image = self.image_flashing_on
 
-       
+    def setPlanName(self,new_name):
+        self.plan_name.set(new_name)
+        
    
     #     self.data = {
     #         "id": StringVar(),

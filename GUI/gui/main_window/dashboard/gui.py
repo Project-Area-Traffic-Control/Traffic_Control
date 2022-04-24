@@ -28,6 +28,10 @@ class Dashboard(Frame):
 
         self.configure(bg="#E0DADA")
 
+        self.numberOfJunction = 4
+        self.current_mode = "auto"
+        self.current_phase = 1
+
         self.temp_time = 0
 
         self.operation_windows = {
@@ -83,40 +87,8 @@ class Dashboard(Frame):
             fg="#FFFFFF"
         )
         self.label_time.place(x=190, y=35, anchor="center")
+        
 
-
-        # canvas3 = Canvas(
-        #     self,
-        #     bg="#FFFFFF",
-        #     height=575,
-        #     width=575,
-        #     bd=0,
-        #     highlightthickness=0,
-        #     relief="ridge",
-        # )
-        # canvas3.place(x=430, y=120)
-
-        # canvas3.image_junction = PhotoImage(file=relative_to_assets("4way0degree.png"))
-
-        # self.label_image_junction = Label(canvas3,image=canvas3.image_junction,bg="#FFFFFF")
-        # self.label_image_junction.place(x=287.5,y=287.5,anchor='center')
-
-
-
-
-
-    def onAuto(self):
-        self.change_img_bt("auto")
-    def onMaual(self):
-        self.change_img_bt("manual")
-        self.change_state_connect("disconnect")
-    def onRed(self):
-        self.change_img_bt("red")
-        self.change_state_connect("connect")
-    def onFlashing(self):
-        self.change_img_bt("flashing")
-        self.countdown()
-    
     def navigate(self, name):
         # Hide all screens
         for operation_windows in self.operation_windows.values():
@@ -124,9 +96,6 @@ class Dashboard(Frame):
 
         # Show the screen of the button pressed
         self.operation_windows[name].place(x=25, y=25, width=380.0, height=670.0)
-
-    def click(self):
-        print("click....")
 
     def change_state_connect(self,state):
         global path
@@ -138,9 +107,12 @@ class Dashboard(Frame):
         new_img=PhotoImage(file=relative_to_assets(path))
         self.label_state_connect.configure(image=new_img)
         self.label_state_connect.image = new_img
-    
-    def setPlanName(self,new_name):
-        self.plan_name.set(new_name)
+
+    def changeMode(self,mode):
+        if mode == "manual":
+            self.operation_windows["manual"].disable(self.numberOfJunction,False)
+        else:
+            self.operation_windows["manual"].disable(self.numberOfJunction,True)
     
     def countdown(self):
         sec = int(self.second.get())
@@ -151,26 +123,6 @@ class Dashboard(Frame):
             self.label_time.config(text=self.second)
             self.label_time.after(1000,self.countdown)
 
-    def countdown1(self):
-        
-        try:
-            temp =  int(self.second.get())
-        except:
-            print("Please input the right value")
-        while temp >-1:
-     
-            secs = temp
-    
-      
-            self.second.set("{0:3d}".format(secs))
-    
-            self.update()
-            time.sleep(1)
-
-            # if (temp == 0):
-            #     messagebox.showinfo("Time Countdown", "Time's up ")
-            
-            temp -= 1
 
 
 

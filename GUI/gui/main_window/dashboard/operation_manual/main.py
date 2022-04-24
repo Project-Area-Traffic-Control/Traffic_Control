@@ -11,6 +11,7 @@ from tkinter import (
     StringVar,
 )
 # import controller as db_controller
+# import trafficLight_controller as TrafficLight_Controller
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -61,6 +62,47 @@ class OperationManual(Frame):
         canvas.create_image(190.0, 90.0, image=canvas.image_line, anchor="n")
 
 
+        self.manual_window = {
+            "4way" : Manual4Way(self),
+            "3way" : Manual3Way(self)
+        }
+
+        self.setManualType(self.parent.numberOfJunction)
+        self.setBorder(self.parent.numberOfJunction,self.parent.current_phase)
+
+        if self.parent.current_mode == "manual":
+            self.disable(self.parent.numberOfJunction,False)
+        else: 
+            self.disable(self.parent.numberOfJunction,True)
+
+    def setManualType(self, numberOfJunction):
+        # Hide all screens
+        for manual_window in self.manual_window.values():
+            manual_window.place_forget()
+
+        # Show the screen of the button pressed
+        if numberOfJunction == 4:
+            self.manual_window["4way"].place(x=0, y=100, width=380.0, height=570.0)
+        if numberOfJunction == 3:
+            self.manual_window["3way"].place(x=0, y=100, width=380.0, height=570.0)
+
+    def setBorder(self,numberOfJunction,current_phase):
+        if numberOfJunction == 4:
+            self.manual_window["4way"].setBorder(current_phase)
+        elif numberOfJunction == 3:
+            self.manual_window["3way"].setBorder(current_phase)
+
+    def disable(self,numberOfJunction,state):
+        if numberOfJunction == 4:
+            self.manual_window["4way"].disable(state)
+        elif numberOfJunction == 3:
+            self.manual_window["3way"].disable(state)
+
+class Manual4Way(Frame):
+    def __init__(self, parent, controller=None, *args, **kwargs):
+        Frame.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+
         self.image_button_4_way_1 = PhotoImage(file=relative_to_assets("4way/4way1.png"))
         self.image_button_4_way_2 = PhotoImage(file=relative_to_assets("4way/4way1.png"))
         self.image_button_4_way_3 = PhotoImage(file=relative_to_assets("4way/4way1.png"))
@@ -70,115 +112,214 @@ class OperationManual(Frame):
         self.image_button_4_way_7 = PhotoImage(file=relative_to_assets("4way/4way1.png"))
         self.image_button_4_way_8 = PhotoImage(file=relative_to_assets("4way/4way1.png"))
 
-        
-        button_4_way_1 = Button(
+        canvas = Canvas(
             self,
+            bg="#FFFFFF",
+            height=570,
+            width=380,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge",
+        )
+        canvas.place(x=0, y=0)
+
+        button_4_way_1 = Button(
+            canvas,
             image=self.image_button_4_way_1,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.onBorder(4,1),
+            command=lambda: self.parent.setManualType(3),
             relief="solid",
             bg="#FFFFFF", 
             bd=0
         )
-        button_4_way_1.place(x=120.0, y=170.0, anchor="center")
+        button_4_way_1.place(x=120.0, y=70.0, anchor="center")
 
         button_4_way_2 = Button(
-            self,
+            canvas,
             image=self.image_button_4_way_2,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.onBorder(4,2),
+            command=lambda: self.setBorder(2),
             relief="solid",
             bg="#FFFFFF", 
             bd=0
         )
-        button_4_way_2.place(x=260.0, y=170.0, anchor="center")
+        button_4_way_2.place(x=260.0, y=70.0, anchor="center")
 
         button_4_way_3 = Button(
-            self,
+            canvas,
             image=self.image_button_4_way_3,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.onBorder(4,3),
+            command=lambda: self.setBorder(3),
             relief="solid",
             bg="#FFFFFF", 
             bd=0
         )
-        button_4_way_3.place(x=120.0, y=310.0, anchor="center")
+        button_4_way_3.place(x=120.0, y=210.0, anchor="center")
 
         button_4_way_4 = Button(
-            self,
+            canvas,
             image=self.image_button_4_way_4,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.onBorder(4,4),
+            command=lambda: self.setBorder(4),
             relief="solid",
             bg="#FFFFFF", 
             bd=0
         )
-        button_4_way_4.place(x=260.0, y=310.0, anchor="center")
+        button_4_way_4.place(x=260.0, y=210.0, anchor="center")
 
         button_4_way_5 = Button(
-            self,
+            canvas,
             image=self.image_button_4_way_5,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.onBorder(4,5),
+            command=lambda: self.setBorder(5),
             relief="solid",
             bg="#FFFFFF", 
             bd=0
         )
-        button_4_way_5.place(x=120.0, y=450.0, anchor="center")
+        button_4_way_5.place(x=120.0, y=350.0, anchor="center")
 
         button_4_way_6 = Button(
-            self,
+            canvas,
             image=self.image_button_4_way_6,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.onBorder(4,6),
+            command=lambda: self.setBorder(6),
             relief="solid",
             bg="#FFFFFF", 
             bd=0
         )
-        button_4_way_6.place(x=260.0, y=450.0, anchor="center")
+        button_4_way_6.place(x=260.0, y=350.0, anchor="center")
         
         button_4_way_7 = Button(
-            self,
+            canvas,
             image=self.image_button_4_way_7,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.onBorder(4,7),
+            command=lambda: self.setBorder(7),
             relief="solid",
             bg="#FFFFFF", 
             bd=0
         )
-        button_4_way_7.place(x=120.0, y=590.0, anchor="center")
+        button_4_way_7.place(x=120.0, y=490.0, anchor="center")
 
         button_4_way_8 = Button(
-            self,
+            canvas,
             image=self.image_button_4_way_8,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.disable(),
+            command=lambda: self.disable(True),
             relief="solid",
             bg="#FFFFFF", 
             bd=0
         )
-        button_4_way_8.place(x=260.0, y=590.0, anchor="center")
+        button_4_way_8.place(x=260.0, y=490.0, anchor="center")
 
         self.button_4_way = [button_4_way_1,button_4_way_2,button_4_way_3,button_4_way_4,button_4_way_5,button_4_way_6,button_4_way_7,button_4_way_8]
     
-    def disable(self):
-         self.button_4_way[7]["state"] = "disabled"
+    def disable(self,state):
+        if state:
+            for button in self.button_4_way:
+                button["state"] = "disabled"
+        else:
+            for button in self.button_4_way:
+                button["state"] = "normal"
 
-    def onBorder(self,way,n):
-        if way == 4:
-            for i in range(len(self.button_4_way)):
-                if i == n-1:
-                    self.button_4_way[i]["bd"] = 3
-                else:
-                    self.button_4_way[i]["bd"] = 0
+    def setBorder(self,n):
+        for i in range(len(self.button_4_way)):
+            if i == n-1:
+                self.button_4_way[i]["bd"] = 3
+            else:
+                self.button_4_way[i]["bd"] = 0
+
+
+class Manual3Way(Frame):
+    def __init__(self, parent, controller=None, *args, **kwargs):
+        Frame.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+
+        self.image_button_3_way_1 = PhotoImage(file=relative_to_assets("4way/4way1.png"))
+        self.image_button_3_way_2 = PhotoImage(file=relative_to_assets("4way/4way1.png"))
+        self.image_button_3_way_3 = PhotoImage(file=relative_to_assets("4way/4way1.png"))
+
+        canvas = Canvas(
+            self,
+            bg="#FFFFFF",
+            height=570,
+            width=380,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge",
+        )
+        canvas.place(x=0, y=0)
+
+        button_3_way_1 = Button(
+            canvas,
+            image=self.image_button_3_way_1,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: self.parent.setManualType(4),
+            relief="solid",
+            bg="#FFFFFF", 
+            bd=0
+        )
+        button_3_way_1.place(x=120.0, y=70.0, anchor="center")
+
+        button_3_way_2 = Button(
+            canvas,
+            image=self.image_button_3_way_2,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: self.setBorder(2),
+            relief="solid",
+            bg="#FFFFFF", 
+            bd=0
+        )
+        button_3_way_2.place(x=260.0, y=70.0, anchor="center")
+
+        button_3_way_3 = Button(
+            canvas,
+            image=self.image_button_3_way_3,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: setLight(),
+            relief="solid",
+            bg="#FFFFFF", 
+            bd=0
+        )
+        button_3_way_3.place(x=120.0, y=210.0, anchor="center")
+
+
+        self.button_3_way = [button_3_way_1,button_3_way_2,button_3_way_3]
+    
+    def disable(self,state):
+        if state:
+            for button in self.button_3_way:
+                button["state"] = "disabled"
+        else:
+            for button in self.button_3_way:
+                button["state"] = "normal"
+
+    def setBorder(self,n):
+        for i in range(len(self.button_3_way)):
+            if i == n-1:
+                self.button_3_way[i]["bd"] = 3
+            else:
+                self.button_3_way[i]["bd"] = 0
+
+
+
+
+def setLight():
+    print("Set port 1 to red")
+    # TrafficLight_Controller.setLightOn(1,"r")
+
+
+
 
 
 
