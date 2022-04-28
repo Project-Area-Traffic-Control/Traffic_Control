@@ -1,6 +1,6 @@
 import mysql.connector
 import os
-import matplotlib.pyplot as pt
+# import matplotlib.pyplot as pt
 
 # Configurations
 from config import config
