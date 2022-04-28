@@ -41,8 +41,8 @@ class MainWindow(Toplevel):
         self.title("Area Traffic Management System")
         self.geometry("1280x720")
         self.bind("<Escape>", self.Quit)
-        # self.attributes('-fullscreen',True)
-        # self.config(cursor="none") # remove cursor 
+        self.attributes('-fullscreen',True)
+        self.config(cursor="none") # remove cursor 
         # self.wm_attributes("-topmost", 1)
 
         self.configure(bg="#E0DADA")
