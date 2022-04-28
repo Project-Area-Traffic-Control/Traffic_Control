@@ -1,3 +1,4 @@
+from itertools import count
 from pathlib import Path
 import time
 from tkinter.constants import ANCHOR, N
@@ -7,7 +8,8 @@ from gui.main_window.dashboard.operation_main.main import OperationMain
 from gui.main_window.dashboard.operation_manual.main import OperationManual
 # from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import Button, Frame, Canvas, Entry, Label, PhotoImage, N, StringVar, messagebox
-# import controller as db_controller
+import controller as db_controller
+import socket_controller as socket
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -27,6 +29,8 @@ class Dashboard(Frame):
         self.parent = parent
 
         self.configure(bg="#E0DADA")
+
+        self.count = 0
 
         self.numberOfJunction = 4
         self.current_mode = "auto"
@@ -87,6 +91,8 @@ class Dashboard(Frame):
             fg="#FFFFFF"
         )
         self.label_time.place(x=190, y=35, anchor="center")
+        self.connect_to_server()
+        self.main_control()
         
 
     def navigate(self, name):
@@ -97,11 +103,11 @@ class Dashboard(Frame):
         # Show the screen of the button pressed
         self.operation_windows[name].place(x=25, y=25, width=380.0, height=670.0)
 
-    def change_state_connect(self,state):
+    def change_img_connected(self,state):
         global path
-        if state == "connect":
+        if state:
             path = "state_connected.png"
-        elif state == "disconnect":
+        else:
             path =  "state_disconnected.png"
 
         new_img=PhotoImage(file=relative_to_assets(path))
@@ -123,8 +129,40 @@ class Dashboard(Frame):
             self.label_time.config(text=self.second)
             self.label_time.after(1000,self.countdown)
 
+    def connect_to_server(self):
+        ip = db_controller.getIP()
+        try:
+            socket.connect(ip)
+            self.change_state_connect('connect')
+        except Exception as err: 
+            print(err)
+            # messagebox.showerror(
+            #     title="Invalid IP",
+            #     message=f"ไม่สามารถเชื่อมต่อกับ {ip} ได้ กรุณาลองใหม่อีกครั้ง",
+            # )
 
 
+
+
+
+
+    
+    def main_control(self):
+     
+
+        if self.count == 5:
+            # print(1)
+            self.count = 0
+
+
+
+
+        self.change_img_connected(socket.getStatus())
+
+        self.count += 1
+        self.label_time.after(200,self.main_control)
+        
+        # self.label_time.affter(200,self.main_control)
 
         # # Vacant Text
         # canvas.create_text(

@@ -1,4 +1,4 @@
-# import mysql.connector
+import mysql.connector
 import os
 import matplotlib.pyplot as pt
 
@@ -11,25 +11,82 @@ load_dotenv()  # Imports environemnt variables from the '.env' file
 # ===================SQL Connectivity=================
 
 # SQL Connection
-# connection = mysql.connector.connect(
-#     # host=config.get("DB_HOST"),
-#     # user=os.getenv("DB_USER"),
-#     # password=os.getenv("DB_PASSWORD"),
-#     # database=config.get("DB_NAME"),
-#     # port="3307",
-#     # autocommit=config.get("DB_AUTOCOMMIT"),
+connection = mysql.connector.connect(
+    # host=config.get("DB_HOST"),
+    # user=os.getenv("DB_USER"),
+    # password=os.getenv("DB_PASSWORD"),
+    # database=config.get("DB_NAME"),
+    # port="3307",
+    # autocommit=config.get("DB_AUTOCOMMIT"),
 
-#     host='localhost',
-#     user='ODBC',
-#     password='Admin1234',
-#     database='hms',
-#     port="3307",
-#     autocommit=config.get("DB_AUTOCOMMIT"),
-# )
+    host='192.168.1.2',
+    user='admin',
+    password='admin',
+    database='project',
+    port="3306",
+    autocommit=config.get("DB_AUTOCOMMIT"),
+)
 
-# cursor = connection.cursor(buffered=True)
+cursor = connection.cursor(buffered=True)
 
 # # SQL functions
+
+
+def checkPassword(password):
+    cmd = "SELECT * FROM Setting WHERE id = 'password' "
+    result = cursor.execute(cmd)
+    result = cursor.fetchall()
+    cmd = None
+
+    if result[0][1] == password:
+        return True
+    else:
+        return False
+
+def updatePassword(newpassword):
+
+    sql = f"UPDATE Setting SET data='{newpassword}' WHERE id='password';"
+    cursor.execute(sql)
+
+    connection.commit()
+
+    print(cursor.rowcount, "record(s) affected")
+
+def getPassword():
+    sql = "SELECT * FROM Setting WHERE id = 'password' "
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    return result[0][1]
+
+def updateIP(new_ip):
+
+    sql = f"UPDATE Setting SET data='{new_ip}' WHERE id='ip';"
+    cursor.execute(sql)
+
+    connection.commit()
+
+    print(cursor.rowcount, "record(s) affected")
+
+def getIP():
+    sql = "SELECT * FROM Setting WHERE id = 'ip' "
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    return result[0][1]
+
+def updateJunction(new_ip):
+
+    sql = f"UPDATE Setting SET data='{new_ip}' WHERE id='junction';"
+    cursor.execute(sql)
+
+    connection.commit()
+
+    print(cursor.rowcount, "record(s) affected")
+
+def getJunction():
+    sql = "SELECT * FROM Setting WHERE id = 'junction' "
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    return result[0][1]
 
 
 # def checkUser(username, password=None):
@@ -39,6 +96,7 @@ load_dotenv()  # Imports environemnt variables from the '.env' file
 #     # a = cursor.fetchone()[0] >= 1
 #     a = 2 >= 1
 #     return a
+
 
 
 # def human_format(num):

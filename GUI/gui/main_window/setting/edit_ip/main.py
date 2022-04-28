@@ -13,7 +13,8 @@ from tkinter import (
     IntVar,
 )
 import ipaddress 
-# import controller as db_controller
+import socket_controller as socket
+import controller as db_controller
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -227,7 +228,7 @@ class Edit_ip(Frame):
             image=canvas.image_save,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.save_password(),
+            command=lambda: self.save_ip(),
             relief="flat",
             bg="#FFFFFF"
         )
@@ -254,16 +255,30 @@ class Edit_ip(Frame):
             self.new_ip.set(self.new_ip.get()[:-1])
             
     def reset_new_value(self):
-        if self.parent.ip.get() == "":
-            self.new_ip.set("กำหนด IP")
+        if self.parent.ip.get() == "กำหนด IP":
+            self.new_ip.set("")
         else:
             self.new_ip.set(self.parent.ip.get())
 
-    def save_password(self):
+    def reset_newpassword(self):
+        self.new_ip.set("")
+
+    def save_ip(self):
         ip = self.validate_ip_address(self.new_ip.get())
+        ip = format(ip)
         if ip:
-            self.parent.ip.set(ip)
-            self.parent.navigate("main")
+            try:
+                if ip != db_controller.getIP():
+                    socket.connect(ip)
+                    self.parent.ip.set(ip)
+                    db_controller.updateIP(ip)
+                self.parent.navigate("main")
+            except Exception:
+                self.reset_newpassword()
+                messagebox.showerror(
+                    title="Invalid IP",
+                    message=f"ไม่สามารถเชื่อมต่อกับ {ip} ได้ กรุณาลองใหม่อีกครั้ง",
+                )
 
     def validate_ip_address(self,address):
         try:
@@ -271,5 +286,8 @@ class Edit_ip(Frame):
             # print("IP address {} is valid. The object returned is {}".format(address, ip))
             return ip
         except ValueError:
-            # print("IP address {} is not valid".format(address)) 
+            messagebox.showerror(
+                title="Invalid IP",
+                message="รูปเเบบ IP ไม่ถูกต้อง กรุณลองใหม่อีกครั้ง",
+            )
             return False

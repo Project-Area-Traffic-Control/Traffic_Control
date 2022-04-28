@@ -6,7 +6,7 @@ from gui.main_window.setting.edit_junction.main import Edit_junction
 from gui.main_window.setting.edit_password.gui import Edit_password
 
 from gui.main_window.setting.setting_main.gui import Setting_main
-# import controller as db_controller
+import controller as db_controller
 
 
 
@@ -28,11 +28,9 @@ class Setting(Frame):
         self.parent = parent
 
         self.ip=StringVar()
-        self.ip.set("")
         self.password=StringVar()
-        self.password.set("1234")
         self.junction=StringVar()
-        self.junction.set("เเยกสุขสมาน")
+        self.loadData()
 
         self.configure(bg="#E0DADA")
 
@@ -61,3 +59,13 @@ class Setting(Frame):
             self.windows[name].reset_new_value()
         elif name == "edit_ip":
             self.windows[name].reset_new_value()
+
+    def loadData(self):
+        password = db_controller.getPassword()
+        ip = db_controller.getIP()
+        self.password.set(password)
+        self.junction.set("เเยกสุขสมาน")
+        if ip != '':
+            self.ip.set(ip)
+        else:
+            self.ip.set('กำหนด IP')

@@ -11,7 +11,7 @@ from tkinter import (
     PhotoImage,
     messagebox,
 )
-# import controller as db_controller
+import controller as db_controller
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -256,5 +256,6 @@ class Edit_password(Frame):
 
     def save_password(self):
         if self.new_password.get() != "":
+            db_controller.updatePassword(self.new_password.get())
             self.parent.password.set(self.new_password.get())
             self.parent.navigate("main")
