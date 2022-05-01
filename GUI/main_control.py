@@ -49,15 +49,16 @@ def loop():
                 order = 1
                 if GlobalData.temp_mode == 'manual':
                     setYellow()
+
+                if GlobalData.temp_mode == 'red' or GlobalData.temp_mode == 'flashing':
+                    GlobalData.updateCurrentPhase(-1)
+                    
                 driveAuto(patterns[order-1]['pattern'])
                 GlobalData.updateTimer(patterns[order-1]['duration'])
                 
             elif current_mode == 'manual':
-                if GlobalData.temp_mode == 'red' or GlobalData.temp_mode == 'flashing':
-                    GlobalData.updateCurrentPhase(1)
                 GlobalData.updateTimer(0)
             elif current_mode == 'red':
-                GlobalData.updateCurrentPhase(-1)
                 GlobalData.updateTimer(0)
                 if GlobalData.temp_mode == 'manual' or GlobalData.temp_mode == 'auto':
                     GlobalData.phase_changed = False
@@ -65,7 +66,6 @@ def loop():
                     GlobalData.phase_changed = True
                 driveAllRed()
             elif current_mode == 'flashing':
-                GlobalData.updateCurrentPhase(-1)
                 GlobalData.updateTimer(0)
                 if GlobalData.temp_mode == 'manual' or GlobalData.temp_mode == 'auto':
                     GlobalData.phase_changed = False
