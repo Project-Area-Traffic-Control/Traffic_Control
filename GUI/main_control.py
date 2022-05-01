@@ -32,6 +32,7 @@ def loop():
     global temp_auto
     stop_thread = True
     temp_auto = 'auto'
+    current_plan = False
     
     temp_now_1_sec = datetime.datetime.now()
     temp_now_500_msec = datetime.datetime.now()
