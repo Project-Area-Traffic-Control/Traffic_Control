@@ -179,13 +179,26 @@ def drivePhaseManual(phase):
     
 
 def drivePhase(phase):
-    print('Drive ',phase)
+    channel = GlobalData.channel
+    setAllRed()
+    if GlobalData.junction['number_channel'] == 3:
+        if phase == 1:
+            Traffic_control.setLightOn(channel[0]['port_right'],'g')
+        elif phase == 2:
+            Traffic_control.setLightOn(channel[1]['port_right'],'g')
+            Traffic_control.setLightOn(channel[1]['port_foward'],'g')
+        elif phase == 3:
+            Traffic_control.setLightOn(channel[2]['port_foward'],'g')
+            Traffic_control.setLightOn(channel[1]['port_foward'],'g')
+        elif phase == 4:
+            Traffic_control.setLightOn(channel[1]['port_right'],'g')
 
 
 
 
 def setYellowPhase(phase):
     channel = GlobalData.channel
+    setAllRed()
     if GlobalData.junction['number_channel'] == 3:
         if phase == 1:
             Traffic_control.setLightOn(channel[0]['port_right'],'y')
