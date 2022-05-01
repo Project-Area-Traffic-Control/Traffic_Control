@@ -180,7 +180,7 @@ def deleteAllChannel():
     return result
 
 def getChannels():
-    sql = "SELECT * FROM Channel"
+    sql = "SELECT * FROM Channel ORDER BY order_number ASC;"
     cursor.execute(sql)
     result = cursor.fetchall()
 

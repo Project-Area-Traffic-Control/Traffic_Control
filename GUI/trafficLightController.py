@@ -84,7 +84,7 @@ def setAllRed():
 
 def setAllYellow(state):
     for port in PortSignel:
-        port.setRed(state)
+        port.setYellow(state)
 
 setOffAll()
 

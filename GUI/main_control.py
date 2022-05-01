@@ -53,7 +53,6 @@ def loop():
                 GlobalData.updateTimer(patterns[order-1]['duration'])
                 
             elif current_mode == 'manual':
-                # drivePhase(GlobalData.current_phase)
                 GlobalData.updateTimer(0)
             elif current_mode == 'red':
                 GlobalData.updateTimer(0)
@@ -89,11 +88,15 @@ def loop():
                     if GlobalData.timer <= 0:
                         
                         if temp_auto == 'auto':
+                            setYellowPhase(GlobalData.current_phase)
                             GlobalData.updateTimer(current_plan['yellow_time'])
                             temp_auto = 'yellow'
+
                         elif temp_auto == 'yellow':
+                            setAllRed()
                             GlobalData.updateTimer(current_plan['delay_red_time'])
                             temp_auto = 'red'
+
                         elif temp_auto == 'red':
                             order += 1
                             if order > len(patterns):
@@ -181,6 +184,20 @@ def drivePhase(phase):
 
 
 
+def setYellowPhase(phase):
+    channel = GlobalData.channel
+    if GlobalData.junction['number_channel'] == 3:
+        if phase == 1:
+            Traffic_control.setLightOn(channel[0]['port_right'])
+        elif phase == 2:
+            Traffic_control.setLightOn(channel[1]['port_right'])
+            Traffic_control.setLightOn(channel[1]['port_foward'])
+        elif phase == 3:
+            Traffic_control.setLightOn(channel[2]['port_foward'])
+            Traffic_control.setLightOn(channel[1]['port_foward'])
+        elif phase == 4:
+            Traffic_control.setLightOn(channel[1]['port_right'])
+
 def driveAllRed():
     print('All Red')
     Traffic_control.setAllRed()
@@ -191,10 +208,14 @@ def driveFlashing(state):
 
 def setYellow():
     global current_plan
-    print("Yellow ",GlobalData.temp_phase)
+    setYellowPhase(GlobalData.temp_phase)
     time.sleep(current_plan['yellow_time'])
 
 def delayRed():
     global current_plan
     print("Red ")
+    setAllRed()
     time.sleep(current_plan['delay_red_time'])
+
+def setAllRed():
+    Traffic_control.setAllRed()
