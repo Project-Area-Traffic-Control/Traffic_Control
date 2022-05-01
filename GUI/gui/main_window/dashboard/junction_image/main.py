@@ -13,6 +13,7 @@ from tkinter import (
 )
 import controller as db_controller
 import global_data as GlobalData
+import socket_controller as socket
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -239,6 +240,7 @@ class JunctionImage(Frame):
 
         if GlobalData.phase_changed:
             self.changChangeImagePhase(current_phase,rotate)
+            socket.emitPhase(current_phase)
 
         
         self.setText()

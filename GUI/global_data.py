@@ -39,7 +39,6 @@ updatePlansData()
 def updateCurrentPhase(newPhase):
     global current_phase
     global temp_phase
-    socket.emitPhase(newPhase)
     temp_phase = current_phase
     current_phase = newPhase
 def getCurrentPhase():
