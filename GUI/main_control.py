@@ -65,16 +65,16 @@ def loop():
                     order = 1
                     if GlobalData.temp_mode == 'manual':
                         setYellow()
-
-                    pattern = patterns[order-1]['pattern']
-                    phase = pattern[8]
-                    drivePhase(phase)
-                    # driveAuto(patterns[order-1]['pattern'])
+                        pattern = patterns[order-1]['pattern']
+                        phase = pattern[8]
+                        drivePhaseAuto(phase)
+                        driveAuto(patterns[order-1]['pattern'])
                     
                     if GlobalData.temp_mode == 'red' or GlobalData.temp_mode == 'flashing':
                         drivePhaseAuto(current_phase)
                         
                     GlobalData.updateTimer(patterns[order-1]['duration'])
+
                 else:
                     GlobalData.updateTimer(0)
                     driveAllRed()
