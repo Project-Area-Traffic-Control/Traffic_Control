@@ -85,10 +85,11 @@ def loop():
 
             elif current_mode == 'red':
                 GlobalData.updateTimer(0)
-                if GlobalData.temp_mode == 'manual' or GlobalData.temp_mode == 'auto':
-                    GlobalData.phase_changed = False
-                    setYellow()
-                    GlobalData.phase_changed = True
+                if GlobalData.temp_mode == 'manual' or GlobalData.temp_mode == 'auto' :
+                    if current_plan['name'] != 'ALLRED' and current_plan['name'] != 'FLASHING':
+                        GlobalData.phase_changed = False
+                        setYellow()
+                        GlobalData.phase_changed = True
                 driveAllRed()
             elif current_mode == 'flashing':
                 GlobalData.updateTimer(0)
@@ -284,7 +285,7 @@ def driveAllRed():
     Traffic_control.setAllRed()
 
 def driveFlashing(state):
-    print('Flashing ',state)
+    # print('Flashing ',state)
     Traffic_control.setAllYellow(state)
 
 def setYellow():
