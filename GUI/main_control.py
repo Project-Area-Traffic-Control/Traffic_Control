@@ -53,6 +53,8 @@ def loop():
                 GlobalData.updateTimer(patterns[order-1]['duration'])
                 
             elif current_mode == 'manual':
+                if GlobalData.temp_mode == 'red' or GlobalData.temp_mode == 'flashing':
+                    GlobalData.updateCurrentPhase(1)
                 GlobalData.updateTimer(0)
             elif current_mode == 'red':
                 GlobalData.updateCurrentPhase(-1)
@@ -68,7 +70,9 @@ def loop():
                 if GlobalData.temp_mode == 'manual' or GlobalData.temp_mode == 'auto':
                     GlobalData.phase_changed = False
                     setYellow()
+                    delayRed()
                     GlobalData.phase_changed = True
+
         
         if temp_phase != current_phase:
             print('change phase to ', current_phase)
