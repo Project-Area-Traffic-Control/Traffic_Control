@@ -105,17 +105,17 @@ class OperationMain(Frame):
         )
         self.button_flashing.place(x=190.0, y=350.0, anchor="n")
 
-        canvas.image_bt_navigate = PhotoImage(file=relative_to_assets("bt_navigate.png"))
-        self.button_navigate = Button(
-            self,
-            image=canvas.image_bt_navigate,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: self.parent.navigate("manual"),
-            relief="flat",
-            bg="#FFFFFF"
-        )
-        self.button_navigate.place(x=295.0, y=177.0, anchor="nw")
+        # canvas.image_bt_navigate = PhotoImage(file=relative_to_assets("bt_navigate.png"))
+        # self.button_navigate = Button(
+        #     self,
+        #     image=canvas.image_bt_navigate,
+        #     borderwidth=0,
+        #     highlightthickness=0,
+        #     command=lambda: self.parent.navigate("manual"),
+        #     relief="flat",
+        #     bg="#FFFFFF"
+        # )
+        # self.button_navigate.place(x=295.0, y=177.0, anchor="nw")
         
         canvas.image_text_plan = PhotoImage(file=relative_to_assets("text_plan.png"))
         canvas.create_image(190.0, 435.0, image=canvas.image_text_plan, anchor="n")
