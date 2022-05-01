@@ -55,14 +55,20 @@ def loop():
             elif current_mode == 'manual':
                 GlobalData.updateTimer(0)
             elif current_mode == 'red':
+                GlobalData.updateCurrentPhase(-1)
                 GlobalData.updateTimer(0)
                 if GlobalData.temp_mode == 'manual' or GlobalData.temp_mode == 'auto':
+                    GlobalData.phase_changed = False
                     setYellow()
+                    GlobalData.phase_changed = True
                 driveAllRed()
             elif current_mode == 'flashing':
+                GlobalData.updateCurrentPhase(-1)
                 GlobalData.updateTimer(0)
                 if GlobalData.temp_mode == 'manual' or GlobalData.temp_mode == 'auto':
+                    GlobalData.phase_changed = False
                     setYellow()
+                    GlobalData.phase_changed = True
         
         if temp_phase != current_phase:
             print('change phase to ', current_phase)
@@ -180,36 +186,30 @@ def drivePhaseManual(phase):
 
 def drivePhase(phase):
     channel = GlobalData.channel
-    Traffic_control.setOffAll()
     if GlobalData.junction['number_channel'] == 3:
         if phase == 1:
-            Traffic_control.setLightOn(channel[0]['port_right'],'g')
+            Traffic_control.setLightOnList([channel[0]['port_right']],'g')
         elif phase == 2:
-            Traffic_control.setLightOn(channel[1]['port_right'],'g')
-            Traffic_control.setLightOn(channel[1]['port_foward'],'g')
+            Traffic_control.setLightOnList([channel[1]['port_right'],channel[1]['port_foward']],'g')
         elif phase == 3:
-            Traffic_control.setLightOn(channel[2]['port_foward'],'g')
-            Traffic_control.setLightOn(channel[1]['port_foward'],'g')
+            Traffic_control.setLightOnList([channel[2]['port_foward'],channel[1]['port_foward']],'g')
         elif phase == 4:
-            Traffic_control.setLightOn(channel[1]['port_right'],'g')
+            Traffic_control.setLightOnList([channel[1]['port_right']],'g')
 
 
 
 
 def setYellowPhase(phase):
     channel = GlobalData.channel
-    Traffic_control.setOffAll()
     if GlobalData.junction['number_channel'] == 3:
         if phase == 1:
-            Traffic_control.setLightOn(channel[0]['port_right'],'y')
+            Traffic_control.setLightOnList([channel[0]['port_right']],'y')
         elif phase == 2:
-            Traffic_control.setLightOn(channel[1]['port_right'],'y')
-            Traffic_control.setLightOn(channel[1]['port_foward'],'y')
+            Traffic_control.setLightOnList([channel[1]['port_right'],channel[1]['port_foward']],'y')
         elif phase == 3:
-            Traffic_control.setLightOn(channel[2]['port_foward'],'y')
-            Traffic_control.setLightOn(channel[1]['port_foward'],'y')
+            Traffic_control.setLightOnList([channel[2]['port_foward'],channel[1]['port_foward']],'y')
         elif phase == 4:
-            Traffic_control.setLightOn(channel[1]['port_right'],'y')
+            Traffic_control.setLightOnList([channel[1]['port_right']],'y')
 
 def driveAllRed():
     print('All Red')

@@ -56,6 +56,13 @@ p10 = PORT_SIGNAL(mcp2.get_pin(11),mcp2.get_pin(12),mcp2.get_pin(13))
 
 PortSignel = [p1,p2,p3,p4,p5,p6,p7,p8,p9,p10]
 
+def setLightOnList(list,light):
+    for i in range(len(PortSignel)):
+        setLightOn(i+1,'r')
+        if i+1 in list:
+            setLightOn(i+1,light)
+    
+
 def setLightOn(portNumber,light):
 
     if(light == 'r'):

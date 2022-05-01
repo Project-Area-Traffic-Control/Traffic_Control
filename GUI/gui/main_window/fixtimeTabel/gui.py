@@ -18,6 +18,8 @@ from tkinter import BOTH, BOTTOM, HORIZONTAL, LEFT, RIGHT, VERTICAL, Y, Button, 
 from tkinter import *
 import controller as db_controller
 import api_controller as api
+import global_data as GlobalData
+
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -183,13 +185,14 @@ class FixtimeTabel(Frame):
                 n += 1
             
             self.loadChanelToDB()
+            self.loadDataToGlobal()
 
         elif showErr:
             messagebox.showerror(
                     message=f"ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
                 )
 
-
+   
     def loadChanelToDB(self):
         junctionData = db_controller.getJunction()
         result = api.getChannels(junctionData['id'])
@@ -215,5 +218,7 @@ class FixtimeTabel(Frame):
                 "port_right": port_right
             }
             db_controller.addChannel(data)
-            
-      
+
+    def loadDataToGlobal(self):
+        GlobalData.updateJunction()
+        GlobalData.updateChannel()

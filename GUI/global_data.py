@@ -6,6 +6,7 @@ global temp_mode
 global current_plan_name
 global timer
 global phase_changed
+
 global junction 
 global channel
 
