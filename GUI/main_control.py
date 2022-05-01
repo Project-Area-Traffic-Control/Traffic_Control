@@ -105,7 +105,8 @@ def loop():
                 drivePhaseManual(GlobalData.current_phase)
                 GlobalData.updateTimer(0)
             elif current_mode == 'auto':
-                drivePhaseAuto(GlobalData.current_phase)
+                if current_plan['name'] != 'ALLRED' and current_plan['name'] != 'FLASHING':
+                    drivePhaseAuto(GlobalData.current_phase)
                  
 
         if current_mode == 'manual' or current_mode == 'auto':
