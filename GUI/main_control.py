@@ -176,9 +176,10 @@ def reloadPattern():
     global patterns
     global order 
 
-    if current_plan['name'] != 'ALLRED' and current_plan['name'] != 'FLASHING':
-        stop()
-        runThreading()
+    if current_plan:
+        if current_plan['name'] != 'ALLRED' and current_plan['name'] != 'FLASHING':
+            stop()
+            runThreading()
 
     current_plan = getCurrentPlan()
     # print(current_plan['name'])
