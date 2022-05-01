@@ -2,6 +2,7 @@ from logging import disable
 from pathlib import Path
 import controller as db_controller
 import api_controller as api
+import global_data as GlobalData
 
 from tkinter import (
     Frame,
@@ -153,8 +154,9 @@ class JunctionList(Frame):
         self.name_junction.set(self.junctionData['name'])
 
     def saveJunction(self):
-        # print('Save ',self.junctionData['name'])
+        print('Save ',self.junctionData['name'])
         db_controller.updateJunction(self.junctionData)
+        GlobalData.updateJunction()
         self.parent.parent.navigate('main')
 
     # def Select(self):

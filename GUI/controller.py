@@ -100,9 +100,7 @@ def getIP():
 
 def updateJunction(data):
     sql = f"UPDATE Junction SET name='{data['name']}', number_channel='{data['number_channel']}', rotate='{data['rotate']}', id_junction='{data['id']}' WHERE id='1';"
-    cursor.execute(sql)
-    connection.commit()
-   
+    cursor.execute(sql)  
 
 def getJunction():
     sql = "SELECT * FROM Junction WHERE id = '1' "

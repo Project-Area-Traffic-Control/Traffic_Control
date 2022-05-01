@@ -38,16 +38,19 @@ def loop():
     
     reloadPattern()
 
-    GlobalData.updateTimer(patterns[order-1]['duration'])
-    
-    phase = patterns[order-1]['pattern'][8]
-    phase = int(phase)
+    order = 1
 
-    GlobalData.updateCurrentPhase(phase)
+    if current_plan['name'] != 'FLASHING' and current_plan['name'] != 'ALLRED':
+        GlobalData.updateTimer(patterns[order-1]['duration'])
+        phase = patterns[order-1]['pattern'][8]
+        phase = int(phase)
+        GlobalData.updateCurrentPhase(phase)
     
     temp_mode = -1
     temp_phase = -1
     state_Flashing = False
+
+    print(current_plan['name'])
 
     while stop_thread:
 
@@ -58,17 +61,21 @@ def loop():
             print('change mode to ',current_mode)
 
             if  current_mode == 'auto':
-                temp_auto = 'auto'
-                order = 1
-                if GlobalData.temp_mode == 'manual':
-                    setYellow()
-
-                driveAuto(patterns[order-1]['pattern'])
-                
-                if GlobalData.temp_mode == 'red' or GlobalData.temp_mode == 'flashing':
-                    drivePhaseAuto(current_phase)
+                if current_plan['name'] != 'ALLRED' and current_plan['name'] != 'FLASHING':
+                    temp_auto = 'auto'
+                    order = 1
+                    if GlobalData.temp_mode == 'manual':
+                        setYellow()
                     
-                GlobalData.updateTimer(patterns[order-1]['duration'])
+                    driveAuto(patterns[order-1]['pattern'])
+                    
+                    if GlobalData.temp_mode == 'red' or GlobalData.temp_mode == 'flashing':
+                        drivePhaseAuto(current_phase)
+                        
+                    GlobalData.updateTimer(patterns[order-1]['duration'])
+                else:
+                    GlobalData.updateTimer(0)
+                    driveAllRed()
                 
                 
             elif current_mode == 'manual':
@@ -109,7 +116,8 @@ def loop():
                 if current_mode == 'manual':
                     t = GlobalData.timer
                     GlobalData.updateTimer(t+1)
-                if current_mode == 'auto':
+
+                if current_mode == 'auto' and current_plan['name'] != 'ALLRED' and current_plan['name'] != 'FLASHING':
                     t = GlobalData.timer
                     GlobalData.updateTimer(t-1)
 
@@ -136,7 +144,7 @@ def loop():
                         
                     
                 
-        if current_mode == 'flashing':
+        if current_mode == 'flashing' or current_plan['name'] == 'FLASHING':
             now = datetime.datetime.now()
             if now - datetime.timedelta(milliseconds=500) >= temp_now_500_msec: 
                 temp_now_500_msec = datetime.datetime.now()
@@ -148,10 +156,11 @@ def loop():
         now = datetime.datetime.now()
         end = current_plan['end']
         now = datetime.datetime.now()
-        t = now.replace(hour=0,minute=0,second=0,microsecond=0)
+        t = now.replace(hour=0,minute=0,second=59,microsecond=999999)
         end = t + end
 
         if end.time() < datetime.datetime.now().time():
+            print('Reload')
             reloadPattern()
           
             
@@ -168,10 +177,11 @@ def reloadPattern():
     global order 
 
     current_plan = getCurrentPlan()
+    # print(current_plan['name'])
     patterns = db_controller.getPatternByPlanID(current_plan['id'])
     GlobalData.updateCurrentPlanName(current_plan['name'])
 
-    order = 1
+    order = 0
 
 
 def getCurrentPlan():
@@ -180,10 +190,12 @@ def getCurrentPlan():
         start = item['start']
         end = item['end']
         now = datetime.datetime.now()
-        t = now.replace(hour=0,minute=0,second=0,microsecond=0)
-        start = t + start
-        end = t + end
-        if start.time() < now.time() and now.time() < end.time():
+        t1 = now.replace(hour=0,minute=0,second=0,microsecond=0)
+        t2 = now.replace(hour=0,minute=0,second=59,microsecond=999999)
+        start = t1 + start
+        end = t2 + end
+        # print(start.time(),now.time(),end.time())
+        if start.time() <= now.time() and now.time() <= end.time():
             return item
 
 def driveAuto(pattern):

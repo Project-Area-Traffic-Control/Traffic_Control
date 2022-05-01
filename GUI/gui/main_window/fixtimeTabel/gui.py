@@ -38,6 +38,8 @@ class FixtimeTabel(Frame):
     def __init__(self, parent, controller=None, *args, **kwargs):
         Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
+        self.plans_data = []
+
 
         self.configure(bg="#E0DADA")
 
@@ -80,6 +82,14 @@ class FixtimeTabel(Frame):
             )
         canvas1.place(x=50.0, y=135, anchor="nw")
 
+        self.loop_label = Label(
+            canvas,
+            anchor="n",
+            font=("Inter", 16 , "bold"),
+            bg="#FFFFFF",  
+            fg="#4F4F4F"
+        )
+
         style = Style()
        
         
@@ -118,18 +128,25 @@ class FixtimeTabel(Frame):
         self.loadDataToDB(False)
         self.setDataToTabel()
 
+        self.loop()
+        
+
+
+    def loop(self):
+        self.setDataToTabel()
+        self.loop_label.after(1000,self.loop)
 
     def loadData(self):
         status = self.loadDataToDB(True)
         if status:
-            self.setDataToTabel()
             control.stop()
             control.runThreading()
             
-
+    def updateDataPlans(self):
+        self.plans_data = db_controller.getPlans()
             
     def setDataToTabel(self):
-        data = db_controller.getPlans()
+        data = self.plans_data
         self.deleteTabel()
         n=0
         select = []
@@ -138,9 +155,10 @@ class FixtimeTabel(Frame):
             start = item['start']
             end = item['end']
             now = datetime.datetime.now()
-            t = now.replace(hour=0,minute=0,second=0,microsecond=0)
-            start = t + start
-            end = t + end
+            t1 = now.replace(hour=0,minute=0,second=0,microsecond=0)
+            t2 = now.replace(hour=0,minute=0,second=59,microsecond=999999)
+            start = t1 + start
+            end = t2 + end
 
             row = self.tv.insert(parent='',index='end',iid=n,text='',
             values=(n+1,start.strftime('%H : %M'),end.strftime('%H : %M'),item['name']))
@@ -188,9 +206,11 @@ class FixtimeTabel(Frame):
                     db_controller.addPattern(dataPattern)
 
                 n += 1
-            
+
+           
             self.loadChanelToDB()
             self.loadJunctionDataToDB()
+            self.updateDataPlans()
             self.loadDataToGlobal()
 
 
@@ -206,7 +226,7 @@ class FixtimeTabel(Frame):
 
    
     def loadChanelToDB(self):
-        junctionData = db_controller.getJunction()
+        junctionData = GlobalData.junction
         result = api.getChannels(junctionData['id'])
         db_controller.deleteAllChannel()
         for item in result:
@@ -244,4 +264,5 @@ class FixtimeTabel(Frame):
             'number_channel': new_junction['number_channel'],
             'rotate': new_junction['rotate']
         }
+    
         db_controller.updateJunction(data)
