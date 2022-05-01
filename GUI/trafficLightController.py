@@ -78,13 +78,16 @@ def setOffAll():
         port.setOffAll()
         
 def setAllRed():
-    for port in PortSignel:
-        port.setRed(True)
+    for i in range(len(PortSignel)):
+        setLightOn(i+1,'r')
 
 
 def setAllYellow(state):
-    for port in PortSignel:
-        port.setYellow(state)
+    if state:
+        for i in range(len(PortSignel)):
+            setLightOn(i+1,'y')
+    else:
+        setOffAll()
 
 setOffAll()
 
