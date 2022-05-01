@@ -240,11 +240,13 @@ class JunctionImage(Frame):
 
         if GlobalData.phase_changed:
             self.changChangeImagePhase(current_phase,rotate)
-            socket.emitPhase(current_phase)
+            if self.temp_phase != current_phase:
+                socket.emitPhase(current_phase)
+                self.temp_phase = current_phase
 
         
         self.setText()
 
-        self.tempPhase = current_phase
+        
         self.temp_rotate = rotate
         self.label_image_junction.after(200,self.loop)
