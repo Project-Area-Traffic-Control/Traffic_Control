@@ -53,7 +53,7 @@ p10 = PORT_SIGNAL(mcp2.get_pin(11),mcp2.get_pin(12),mcp2.get_pin(13))
 # p15 = PORT_SIGNAL(mcp3.get_pin(10),mcp3.get_pin(11),mcp3.get_pin(12))
 # p16 = PORT_SIGNAL(mcp3.get_pin(13),mcp3.get_pin(14),mcp3.get_pin(15))
 
-p1.setRed(True)
+
 PortSignel = [p1,p2,p3,p4,p5,p6,p7,p8,p9,p10]
 
 def setLightOn(portNumber,light):
@@ -81,7 +81,13 @@ def setAllRed():
     for port in PortSignel:
         port.setRed(True)
 
+
+def setAllYellow(state):
+    for port in PortSignel:
+        port.setRed(state)
+
 setOffAll()
+
 # setLightOn(1,'g')
 # setLightOn(2,'g')
 # setLightOn(4,'r')

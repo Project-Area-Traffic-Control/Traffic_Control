@@ -1,5 +1,4 @@
 from ast import Lambda
-from asyncio.windows_events import NULL
 import datetime
 from distutils.command.config import config
 from itertools import starmap
@@ -198,8 +197,8 @@ class FixtimeTabel(Frame):
         for item in result:
             global port_forward
             global port_right
-            port_forward = NULL
-            port_right = NULL
+            port_forward = 0
+            port_right = 0
 
             for phase in item['phase']:
      

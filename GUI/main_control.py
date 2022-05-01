@@ -4,6 +4,7 @@ import datetime
 import time
 import controller as db_controller
 import global_data as GlobalData
+import trafficLightController as Traffic_control
 
 
 def loop():
@@ -182,9 +183,11 @@ def drivePhase(phase):
 
 def driveAllRed():
     print('All Red')
+    Traffic_control.setAllRed()
 
 def driveFlashing(state):
     print('Flashing ',state)
+    Traffic_control.setAllYellow(state)
 
 def setYellow():
     global current_plan
