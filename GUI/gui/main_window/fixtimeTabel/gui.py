@@ -19,6 +19,7 @@ from tkinter import *
 import controller as db_controller
 import api_controller as api
 import global_data as GlobalData
+import main_control as control
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -119,8 +120,12 @@ class FixtimeTabel(Frame):
 
 
     def loadData(self):
-        self.loadDataToDB(True)
-        self.setDataToTabel()
+        status = self.loadDataToDB(True)
+        if status:
+            self.setDataToTabel()
+            control.stop()
+            control.runThreading()
+            
 
             
     def setDataToTabel(self):
@@ -185,12 +190,19 @@ class FixtimeTabel(Frame):
                 n += 1
             
             self.loadChanelToDB()
+            self.loadJunctionDataToDB()
             self.loadDataToGlobal()
+
+
+            return True
 
         elif showErr:
             messagebox.showerror(
                     message=f"ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
                 )
+            return False
+        else:
+            return False
 
    
     def loadChanelToDB(self):
@@ -222,3 +234,14 @@ class FixtimeTabel(Frame):
     def loadDataToGlobal(self):
         GlobalData.updateJunction()
         GlobalData.updateChannel()
+
+    def loadJunctionDataToDB(self):
+      
+        new_junction = api.getJunctionByID(GlobalData.junction['id'])
+        data = self.junctionData = {
+            'id': new_junction['id'],
+            'name': new_junction['name'],
+            'number_channel': new_junction['number_channel'],
+            'rotate': new_junction['rotate']
+        }
+        db_controller.updateJunction(data)

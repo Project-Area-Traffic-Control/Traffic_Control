@@ -14,6 +14,7 @@ from tkinter import (
 import controller as db_controller
 import global_data as GlobalData
 
+
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
 
@@ -165,7 +166,7 @@ class JunctionImage(Frame):
             self.label_image_junction.image = image_junction
 
             if GlobalData.current_mode == 'red' or GlobalData.current_mode == 'flashing':
-                image_junction = PhotoImage(file=relative_to_assets(f"4way/4way_defult"))
+                image_junction = PhotoImage(file=relative_to_assets(f"4way/4way_defult.png"))
                 self.label_image_junction.configure(image=image_junction)
                 self.label_image_junction.image = image_junction
     

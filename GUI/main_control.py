@@ -1,11 +1,28 @@
 
 from cmath import phase
 import datetime
+import threading
 import time
 import controller as db_controller
 import global_data as GlobalData
 import trafficLightController as Traffic_control
 
+def runThreading():
+    global thread
+    thread = threading.Thread(target=loop)
+    thread.start()
+
+def start():
+    global thread
+    thread.start()
+
+def stop():
+    global stop_thread
+    stop_thread = False
+
+    thread.join()
+
+    print('stop')
 
 def loop():
     global stop_thread
@@ -15,13 +32,11 @@ def loop():
     global temp_auto
     stop_thread = True
     temp_auto = 'auto'
-    order = 1
+    
     temp_now_1_sec = datetime.datetime.now()
     temp_now_500_msec = datetime.datetime.now()
     
-    current_plan = getCurrentPlan()
-    patterns = db_controller.getPatternByPlanID(current_plan['plan_id'])
-    GlobalData.updateCurrentPlanName(current_plan['name'])
+    reloadPattern()
 
     GlobalData.updateTimer(patterns[order-1]['duration'])
     
@@ -30,9 +45,6 @@ def loop():
 
     GlobalData.updateCurrentPhase(phase)
     
-
-    print(patterns)
-
     temp_mode = -1
     temp_phase = -1
     state_Flashing = False
@@ -44,6 +56,7 @@ def loop():
         
         if temp_mode != current_mode:
             print('change mode to ',current_mode)
+
             if  current_mode == 'auto':
                 temp_auto = 'auto'
                 order = 1
@@ -141,25 +154,24 @@ def loop():
         if end.time() < datetime.datetime.now().time():
             reloadPattern()
           
-
-
             
         temp_mode = current_mode
         temp_phase = current_phase
         time.sleep(0.001)
 
 
-def stop():
-    global stop_thread
-    stop_thread = False
+
 
 def reloadPattern():
     global current_plan
     global patterns
+    global order 
+
     current_plan = getCurrentPlan()
-    patterns = db_controller.getPatternByPlanID(current_plan['plan_id'])
+    patterns = db_controller.getPatternByPlanID(current_plan['id'])
     GlobalData.updateCurrentPlanName(current_plan['name'])
 
+    order = 1
 
 
 def getCurrentPlan():
@@ -205,7 +217,23 @@ def drivePhase(phase):
         elif phase == 4:
             Traffic_control.setLightOnList([channel[1]['port_right']],'g')
 
-
+    elif GlobalData.junction['number_channel'] == 4:
+        if phase == 1:
+            Traffic_control.setLightOnList([channel[0]['port_right'],channel[0]['port_foward']],'g')
+        elif phase == 2:
+            Traffic_control.setLightOnList([channel[1]['port_right'],channel[1]['port_foward']],'g')
+        elif phase == 3:
+            Traffic_control.setLightOnList([channel[2]['port_right'],channel[2]['port_foward']],'g')
+        elif phase == 4:
+            Traffic_control.setLightOnList([channel[3]['port_right'],channel[3]['port_foward']],'g')
+        elif phase == 5:
+            Traffic_control.setLightOnList([channel[0]['port_foward'],channel[2]['port_foward']],'g')
+        elif phase == 6:
+            Traffic_control.setLightOnList([channel[1]['port_foward'],channel[3]['port_foward']],'g')
+        elif phase == 7:
+            Traffic_control.setLightOnList([channel[0]['port_right'],channel[2]['port_right']],'g')
+        elif phase == 8:
+            Traffic_control.setLightOnList([channel[1]['port_right'],channel[3]['port_right']],'g')
 
 
 def setYellowPhase(phase):
@@ -219,6 +247,24 @@ def setYellowPhase(phase):
             Traffic_control.setLightOnList([channel[2]['port_foward'],channel[1]['port_foward']],'y')
         elif phase == 4:
             Traffic_control.setLightOnList([channel[1]['port_right']],'y')
+
+    elif GlobalData.junction['number_channel'] == 4:
+        if phase == 1:
+            Traffic_control.setLightOnList([channel[0]['port_right'],channel[0]['port_foward']],'y')
+        elif phase == 2:
+            Traffic_control.setLightOnList([channel[1]['port_right'],channel[1]['port_foward']],'y')
+        elif phase == 3:
+            Traffic_control.setLightOnList([channel[2]['port_right'],channel[2]['port_foward']],'y')
+        elif phase == 4:
+            Traffic_control.setLightOnList([channel[3]['port_right'],channel[3]['port_foward']],'y')
+        elif phase == 5:
+            Traffic_control.setLightOnList([channel[0]['port_foward'],channel[2]['port_foward']],'y')
+        elif phase == 6:
+            Traffic_control.setLightOnList([channel[1]['port_foward'],channel[3]['port_foward']],'y')
+        elif phase == 7:
+            Traffic_control.setLightOnList([channel[0]['port_right'],channel[2]['port_right']],'y')
+        elif phase == 8:
+            Traffic_control.setLightOnList([channel[1]['port_right'],channel[3]['port_right']],'y')
 
 def driveAllRed():
     print('All Red')
@@ -241,3 +287,4 @@ def delayRed():
 
 def setAllRed():
     Traffic_control.setAllRed()
+    print('All Red')

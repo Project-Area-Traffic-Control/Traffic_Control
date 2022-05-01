@@ -153,7 +153,7 @@ class JunctionList(Frame):
         self.name_junction.set(self.junctionData['name'])
 
     def saveJunction(self):
-        print('Save ',self.junctionData['name'])
+        # print('Save ',self.junctionData['name'])
         db_controller.updateJunction(self.junctionData)
         self.parent.parent.navigate('main')
 

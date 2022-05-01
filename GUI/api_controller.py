@@ -16,6 +16,13 @@ def convertDataTimeToLocal(dateTime):
     return (date + datetime.timedelta(hours=7))
 
 
+def getJunctionByID(id):
+    response = requests.get(URL+f'/junctions/{id}')
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return False
+
 def getAllJunction():
     try:
         response = requests.get(URL+'/junctions')

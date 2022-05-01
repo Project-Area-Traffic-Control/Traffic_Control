@@ -10,8 +10,7 @@ root.withdraw()  # WithDraw the window
 
 if __name__ == "__main__":
 
-    t1 = threading.Thread(target=control.loop)
-    t1.start()
+    control.runThreading()
 
     mainWindow()
 
