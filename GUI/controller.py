@@ -1,3 +1,4 @@
+from unittest import result
 import mysql.connector
 import os
 # import matplotlib.pyplot as pt
@@ -37,21 +38,15 @@ def checkPassword(password):
     result = cursor.execute(cmd)
     result = cursor.fetchall()
     cmd = None
-
     if result[0][1] == password:
         return True
     else:
         return False
 
 def updatePassword(newpassword):
-
     sql = f"UPDATE Setting SET data='{newpassword}' WHERE id='password';"
     cursor.execute(sql)
-
-    connection.commit()
-
-    print(cursor.rowcount, "record(s) affected")
-
+   
 def getPassword():
     sql = "SELECT * FROM Setting WHERE id = 'password' "
     cursor.execute(sql)
@@ -59,13 +54,9 @@ def getPassword():
     return result[0][1]
 
 def updateIP(new_ip):
-
     sql = f"UPDATE Setting SET data='{new_ip}' WHERE id='ip';"
     cursor.execute(sql)
 
-    connection.commit()
-
-    print(cursor.rowcount, "record(s) affected")
 
 def getIP():
     sql = "SELECT * FROM Setting WHERE id = 'ip' "
@@ -73,21 +64,137 @@ def getIP():
     result = cursor.fetchall()
     return result[0][1]
 
-def updateJunction(new_ip):
+# def updateCurrentPhase(newPhase):
+#     sql = f"UPDATE Setting SET data='{newPhase}' WHERE id='current_phase';"
+#     cursor.execute(sql)
+ 
+# def getCurrentPhase():
+#     sql = "SELECT * FROM Setting WHERE id = 'current_phase' "
+#     cursor.execute(sql)
+#     result = cursor.fetchall()
+#     return int(result[0][1])
 
-    sql = f"UPDATE Setting SET data='{new_ip}' WHERE id='junction';"
+# def updateCurrentMode(newMode):
+#     sql = f"UPDATE Setting SET data='{newMode}' WHERE id='current_mode';"
+#     cursor.execute(sql)
+ 
+# def getCurrentMode():
+#     sql = "SELECT * FROM Setting WHERE id = 'current_mode' "
+#     cursor.execute(sql)
+#     result = cursor.fetchall()
+#     connection.commit()
+#     return result[0][1]
+
+# def updateTimer(newtime):
+#     sql = f"UPDATE Setting SET data='{newtime}' WHERE id='timer';"
+#     cursor.execute(sql)
+ 
+# def getTimer():
+#     sql = "SELECT * FROM Setting WHERE id = 'timer' "
+#     cursor.execute(sql)
+#     result = cursor.fetchall()
+#     return int(result[0][1])
+
+
+
+
+def updateJunction(data):
+    sql = f"UPDATE Junction SET name='{data['name']}', number_channel='{data['number_channel']}', rotate='{data['rotate']}', id_junction='{data['id']}' WHERE id='1';"
     cursor.execute(sql)
-
     connection.commit()
-
-    print(cursor.rowcount, "record(s) affected")
+   
 
 def getJunction():
-    sql = "SELECT * FROM Setting WHERE id = 'junction' "
+    sql = "SELECT * FROM Junction WHERE id = '1' "
+    cursor.execute(sql)
+    result = cursor.fetchall()[0]
+    data = {
+        'id': result[4],
+        'name': result[1],
+        'number_channel': result[2],
+        'rotate': result[3]
+    }
+    return data
+
+def deleteAllPlan():
+    sql = "DELETE FROM Plan;"
+    result = cursor.execute(sql)
+    return result
+
+def addPlan(data):
+    sql = f"INSERT INTO Plan(id,start,end,name,yellow_time,delay_red_time,plan_id) values('{data['id']}','{data['start']}','{data['end']}','{data['name']}',{data['yellow_time']},{data['delay_red_time']},{data['plan_id']});"
+    cursor.execute(sql)
+  
+
+def getPlans():
+    sql = "SELECT * FROM Plan"
     cursor.execute(sql)
     result = cursor.fetchall()
-    return result[0][1]
 
+    data = []
+    for item in result:
+        temp = {
+            'id': item[0],
+            'start': item[1],
+            'end': item[2],
+            'name': item[3],
+            'yellow_time': item[4],
+            'delay_red_time': item[5],
+            'plan_id': item[6]
+        }
+        data.append(temp)
+
+    return data
+
+def addPattern(data):
+    sql = f"INSERT INTO Pattern(plan_id,pattern,order_number,duration) values('{data['plan_id']}','{data['pattern']}','{data['order']}','{data['duration']}');"
+    cursor.execute(sql)
+    
+def deleteAllPattern():
+    sql = "DELETE FROM Pattern;"
+    result = cursor.execute(sql)
+    return result
+
+def getPatternByPlanID(id):
+    sql = f"SELECT * FROM Pattern WHERE plan_id = '{id}' ORDER BY order_number ASC;"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    data = []
+    for item in result:
+        temp = {
+            "plan_id": item[0],
+            "pattern": item[1],
+            "order": item[2],
+            "duration": item[3]
+        }
+        data.append(temp)
+    return data
+
+def addChannel(data):
+    sql = f"INSERT INTO Channel(order_number,name,port_forward,port_right) values('{data['order_number']}','{data['name']}','{data['port_forward']}','{data['port_right']}');"
+    cursor.execute(sql)
+
+def deleteAllChannel():
+    sql = "DELETE FROM Channel;"
+    result = cursor.execute(sql)
+    return result
+
+def getChannels():
+    sql = "SELECT * FROM Channel"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+
+    data = []
+    for item in result:
+        temp = {
+            'order_number': item[0],
+            'name' : item[1],
+            'port_foward': item[2],
+            'port_right': item[3]
+        }
+        data.append(temp)
+
+    return data
 
 # def checkUser(username, password=None):
 #     # cmd = f"Select count(username) from login where username='{username}' and BINARY password='{password}'"

@@ -240,7 +240,7 @@ class Edit_ip(Frame):
             image=canvas.image_cancel,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.parent.navigate("main"),
+            command=lambda: self.cancel(),
             relief="flat",
             bg="#FFFFFF"
         )
@@ -260,21 +260,42 @@ class Edit_ip(Frame):
         else:
             self.new_ip.set(self.parent.ip.get())
 
-    def reset_newpassword(self):
+    def reset_newIP(self):
         self.new_ip.set("")
+
+    def cancel(self):
+        if not socket.getStatus():
+            try:
+                socket.connect(db_controller.getIP())
+            except Exception as err:
+                print(err)
+        self.parent.navigate("main")
 
     def save_ip(self):
         ip = self.validate_ip_address(self.new_ip.get())
         ip = format(ip)
         if ip:
             try:
-                if ip != db_controller.getIP():
+                if not socket.getStatus():
                     socket.connect(ip)
                     self.parent.ip.set(ip)
                     db_controller.updateIP(ip)
+                    messagebox.showinfo(
+                        title="Success",
+                        message="เชื่อมต่อสำเร็จ",
+                    )
+                elif ip != db_controller.getIP():
+                    socket.disconnect()
+                    socket.connect(ip)
+                    self.parent.ip.set(ip)
+                    db_controller.updateIP(ip)
+                    messagebox.showinfo(
+                        title="Success",
+                        message="เชื่อมต่อสำเร็จ",
+                    )
                 self.parent.navigate("main")
             except Exception:
-                self.reset_newpassword()
+                # self.reset_newIP()
                 messagebox.showerror(
                     title="Invalid IP",
                     message=f"ไม่สามารถเชื่อมต่อกับ {ip} ได้ กรุณาลองใหม่อีกครั้ง",

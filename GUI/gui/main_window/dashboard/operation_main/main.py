@@ -12,7 +12,8 @@ from tkinter import (
     messagebox,
     StringVar,
 )
-# import controller as db_controller
+import controller as db_controller
+import global_data as GlobalData
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -141,28 +142,18 @@ class OperationMain(Frame):
         )
         self.label_timer.place(x=190, y=620, anchor="center")
         self.my_time()
-
-        self.change_img_bt(self.parent.current_mode)
-
+        self.loop()
 
     def onAuto(self):
-        self.change_img_bt("auto")
-        self.parent.changeMode("auto")
+        GlobalData.updateCurrentMode('auto')
     def onMaual(self):
-        self.change_img_bt("manual")
-        self.parent.changeMode("manual")
-        self.parent.navigate("manual")
-        self.parent.change_state_connect("disconnect")
+        GlobalData.updateCurrentMode('manual')
+        self.parent.navigate("manual")   
     def onRed(self):
-        self.change_img_bt("red")
-        self.parent.changeMode("red")
-
-        self.parent.change_state_connect("connect")
+        GlobalData.updateCurrentMode('red')
     def onFlashing(self):
-        self.change_img_bt("flashing")
-        self.parent.changeMode("flashing")
-
-        self.parent.countdown()
+        GlobalData.updateCurrentMode('flashing')
+  
 
 
     def my_time(self):
@@ -227,6 +218,11 @@ class OperationMain(Frame):
     def setPlanName(self,new_name):
         self.plan_name.set(new_name)
         
+
+    def loop(self):
+        self.change_img_bt(GlobalData.current_mode)
+        self.setPlanName(GlobalData.current_plan_name)
+        self.label_timer.after(200,self.loop)
    
     #     self.data = {
     #         "id": StringVar(),

@@ -1,13 +1,24 @@
+from ast import Lambda
+from asyncio.windows_events import NULL
+import datetime
+from distutils.command.config import config
+from itertools import starmap
 from pathlib import Path
+from sqlite3 import Date
 import time
 from tkinter.constants import ANCHOR, N
+from tkinter.tix import ButtonBox
+from tkinter.ttk import Style, Treeview
+from turtle import left, right
 from gui.main_window.dashboard.junction_image.main import JunctionImage
 # from matplotlib.figure import Figure
 from gui.main_window.dashboard.operation_main.main import OperationMain
 from gui.main_window.dashboard.operation_manual.main import OperationManual
 # from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from tkinter import Button, Frame, Canvas, Entry, Label, PhotoImage, N, StringVar, messagebox
-# import controller as db_controller
+from tkinter import BOTH, BOTTOM, HORIZONTAL, LEFT, RIGHT, VERTICAL, Y, Button, Frame, Canvas, Entry, Label, PhotoImage, N, Scrollbar, StringVar, messagebox
+from tkinter import *
+import controller as db_controller
+import api_controller as api
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -28,5 +39,182 @@ class FixtimeTabel(Frame):
 
         self.configure(bg="#E0DADA")
 
+        canvas = Canvas(
+                self,
+                bg="#FFFFFF",
+                height=670,
+                width=980,
+                bd=0,
+                highlightthickness=0,
+                relief="ridge",
+            )
+        canvas.place(x=25, y=25)
+
+        canvas.image_text_tabel = PhotoImage(file=relative_to_assets("text_tabel_plan.png"))
+        canvas.create_image(25, 55.0, image=canvas.image_text_tabel, anchor="w")
+
+        canvas.image_bt_load_data = PhotoImage(file=relative_to_assets("bt_load_data.png"))
+        canvas.bt_load_data = Button(
+            canvas,
+            image=canvas.image_bt_load_data,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: self.loadData(),
+            relief="flat",
+            bg="#FFFFFF"
+        )
+        canvas.bt_load_data.place(x=955.0, y=55.0, anchor="e")
+
+
+        canvas1 = Canvas(
+                self,
+                bg="#FFFFFF",
+                width=930,
+                height=535,
+                bd=0,
+                highlightthickness=0,
+                relief="ridge",
+                scrollregion=(0,0,535,930)
+            )
+        canvas1.place(x=50.0, y=135, anchor="nw")
+
+        style = Style()
+       
         
+        style.theme_use("default")
+        style.map("Treeview")
+        style.configure("Treeview.Heading", font=('Inter', 16, 'bold') ,  bg="#FFFFFF",  fg="#4F4F4F" )
+        style.configure('Treeview', rowheight=40, font=('Inter', 14) )
+
+        
+      
+        self.tv = Treeview(canvas1, show='headings', selectmode="none")
+        self.tv.place(x=465.0, y=0,height=535, anchor="n")
+
+        self.tv['columns'] = ('no','start', 'stop', 'plan')
+
+        sb = Scrollbar(self, orient=VERTICAL)
+        sb.pack(side=RIGHT, fill=Y)
+
+        self.tv.config(yscrollcommand=sb.set)
+        sb.config(command=self.tv.yview)
+
+       
+
+        self.tv.column("#0", width=0,  stretch=NO)
+        self.tv.column("no",anchor=CENTER, width=90)
+        self.tv.column("start",anchor=CENTER, width=280)
+        self.tv.column("stop",anchor=CENTER,width=280)
+        self.tv.column("plan",anchor=CENTER,width=280)
+
+        self.tv.heading("#0",text="",anchor=CENTER)
+        self.tv.heading("no",text="ลำดับ",anchor=CENTER)
+        self.tv.heading("start",text="เวลาเริ่มต้น",anchor=CENTER)
+        self.tv.heading("stop",text="เวลาสิ้นสุด",anchor=CENTER)
+        self.tv.heading("plan",text="เเผนการทำงาน",anchor=CENTER)
+
+        self.loadDataToDB(False)
+        self.setDataToTabel()
+
+
+    def loadData(self):
+        self.loadDataToDB(True)
+        self.setDataToTabel()
+
+            
+    def setDataToTabel(self):
+        data = db_controller.getPlans()
+        self.deleteTabel()
+        n=0
+        select = []
+        for item in data:
+
+            start = item['start']
+            end = item['end']
+            now = datetime.datetime.now()
+            t = now.replace(hour=0,minute=0,second=0,microsecond=0)
+            start = t + start
+            end = t + end
+
+            row = self.tv.insert(parent='',index='end',iid=n,text='',
+            values=(n+1,start.strftime('%H : %M'),end.strftime('%H : %M'),item['name']))
+            
+            if start.time() < now.time() and now.time() < end.time():
+                select.append(row)
+
+            n += 1
+        self.tv.selection_set(select)
+
+
+    def deleteTabel(self):
+        for row in self.tv.get_children():
+            self.tv.delete(row)
+
+    def loadDataToDB(self,showErr):
+        junctionData = db_controller.getJunction()
+        result = api.getFixtimeTabel(junctionData['id'])
+        if result:
+            db_controller.deleteAllPlan()
+            db_controller.deleteAllPattern()
+            n = 0
+            for item in result:
+                start = api.convertDataTimeToLocal(item['start'])
+                end = api.convertDataTimeToLocal(item['end'])
+                data = {
+                    'id': n,
+                    'start': start.time().replace(second=0),
+                    'end': end.time().replace(second=0),
+                    'name': item['plan']['name'],
+                    'yellow_time': item['plan']['yellow_time'],
+                    'delay_red_time': item['plan']['delay_red_time'],
+                    'plan_id': item['plan']['id'],
+                }
+                db_controller.addPlan(data)
+
+                patterns = api.getPlanByID(data['plan_id'])['pattern']
+                for pattern in patterns:
+                    dataPattern = {
+                        "plan_id": n,
+                        "pattern": pattern['pattern'],
+                        "order": pattern['order'],
+                        "duration": pattern['duration']
+                    }
+                    db_controller.addPattern(dataPattern)
+
+                n += 1
+            
+            self.loadChanelToDB()
+
+        elif showErr:
+            messagebox.showerror(
+                    message=f"ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
+                )
+
+
+    def loadChanelToDB(self):
+        junctionData = db_controller.getJunction()
+        result = api.getChannels(junctionData['id'])
+        db_controller.deleteAllChannel()
+        for item in result:
+            global port_forward
+            global port_right
+            port_forward = NULL
+            port_right = NULL
+
+            for phase in item['phase']:
+     
+
+                if phase['type'] == 'FORWARD':
+                    port_forward = phase['port_number']
+                elif phase['type'] == 'TURN_RIGHT':
+                    port_right = phase['port_number']
+
+            data = {
+                "order_number": item['order'],
+                "name":  item['name'],
+                "port_forward": port_forward,
+                "port_right": port_right
+            }
+            db_controller.addChannel(data)
+            
       

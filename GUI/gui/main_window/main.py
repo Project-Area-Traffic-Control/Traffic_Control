@@ -17,8 +17,8 @@ from gui.main_window.about.main import About
 from gui.main_window.rooms.main import Rooms
 from gui.main_window.guests.main import Guests
 from gui.main_window.setting.main import Setting
-from .. import login
 import socket_controller as socketIO
+import main_control as control
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -41,8 +41,8 @@ class MainWindow(Toplevel):
         self.title("Area Traffic Management System")
         self.geometry("1280x720")
         self.bind("<Escape>", self.Quit)
-        self.attributes('-fullscreen',True)
-        self.config(cursor="none") # remove cursor 
+        # self.attributes('-fullscreen',True)
+        # self.config(cursor="none") # remove cursor 
         # self.wm_attributes("-topmost", 1)
 
         self.configure(bg="#E0DADA")
@@ -79,6 +79,7 @@ class MainWindow(Toplevel):
 
     def Quit(self,event):
         socketIO.disconnect()
+        control.stop()
         quit()
 
 class Main(Frame):
@@ -115,7 +116,19 @@ class Main(Frame):
             cursor='hand2', activebackground="#5E95FF",
             relief="flat",
         )
-        self.dashboard_btn.place(x=1, y=120.0, width=250.0, height=60.0)
+        self.dashboard_btn.place(x=0, y=120.0, width=250.0, height=60.0)
+
+        self.button_image_plan = PhotoImage(file=relative_to_assets("button_plan.png"))
+        self.plan_btn = Button(
+            self.canvas,
+            image=self.button_image_plan,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: self.handle_btn_press(self.plan_btn, "tabel"),
+            cursor='hand2', activebackground="#5E95FF",
+            relief="flat",
+        )
+        self.plan_btn.place(x=0.0, y=180.0, width=250.0, height=60.0)
 
         self.button_image_2 = PhotoImage(file=relative_to_assets("button_setting.png"))
         self.setting_btn = Button(
@@ -127,7 +140,9 @@ class Main(Frame):
             cursor='hand2', activebackground="#5E95FF",
             relief="flat",
         )
-        self.setting_btn.place(x=1, y=180.0, width=250.0, height=60.0)
+        self.setting_btn.place(x=0, y=240.0, width=250.0, height=60.0)
+
+
 
         self.button_image_logout = PhotoImage(file=relative_to_assets("button_logout.png"))
         self.logout_btn = Button(
@@ -136,9 +151,10 @@ class Main(Frame):
             borderwidth=0,
             highlightthickness=0,
             command=lambda: self.logout(),
+            cursor='hand2', activebackground="#5E95FF",
             relief="flat",
         )
-        self.logout_btn.place(x=1.0, y=240.0, width=250.0, height=60.0)
+        self.logout_btn.place(x=0.0, y=540.0, width=250.0, height=60.0)
 
         self.canvas.create_text(
             40.0,
@@ -153,9 +169,9 @@ class Main(Frame):
             "main": Dashboard(self),
             "setting": Setting(self),
             "tabel": FixtimeTabel(self),
-            "gue": Guests(self),
-            "abt": About(self),
-            "res": Reservations(self),
+            # "gue": Guests(self),
+            # "abt": About(self),
+            # "res": Reservations(self),
         }
 
         self.handle_btn_press(self.dashboard_btn, "main")

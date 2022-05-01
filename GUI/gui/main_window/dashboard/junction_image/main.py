@@ -11,7 +11,8 @@ from tkinter import (
     messagebox,
     StringVar,
 )
-# import controller as db_controller
+import controller as db_controller
+import global_data as GlobalData
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -31,6 +32,8 @@ class JunctionImage(Frame):
         self.parent = parent
 
         self.configure(bg="#FFFFFF")
+        self.temp_phase = -1
+        self.temp_rotate = -1
 
         canvas = Canvas(
             self,
@@ -43,9 +46,10 @@ class JunctionImage(Frame):
         )
         canvas.place(x=0, y=0)
 
-        canvas.image_junction = PhotoImage(file=relative_to_assets("4way/4way0degree.png"))
+        self.image_junction_3way_defult = PhotoImage(file=relative_to_assets("3way/0/3way_defult.png"))
 
-        self.label_image_junction = Label(canvas,image=canvas.image_junction,bg="#FFFFFF")
+
+        self.label_image_junction = Label(canvas,image=self.image_junction_3way_defult,bg="#FFFFFF")
         self.label_image_junction.place(x=287.5,y=287.5,anchor='center')
 
 
@@ -53,12 +57,6 @@ class JunctionImage(Frame):
         self.chanel_e = StringVar()
         self.chanel_s = StringVar()
         self.chanel_w = StringVar()
-
-        self.chanel_n.set("ร่มเกล้า")
-        self.chanel_e.set("ลาดกระบัง")
-        self.chanel_s.set("ประเวศ")
-        self.chanel_w.set("หนองจอก")
-
 
         label_chanel_n = Label(
             canvas,
@@ -99,325 +97,151 @@ class JunctionImage(Frame):
             fg="#4F4F4F"
         )
         label_chanel_w.place(x=180, y=160, anchor="ne")
+      
+        self.loop()
 
 
-    # def onClick(self,way,n):
+    def changChangeImagePhase(self,phase_number,rotate):
+        junction = GlobalData.junction
+        number_channel = junction['number_channel']
+        if number_channel == 3:
+            if phase_number < 5:
+                image_junction = PhotoImage(file=relative_to_assets(f"3way/{rotate}/3way_{phase_number}.png"))
+                self.label_image_junction.configure(image=image_junction)
+                self.label_image_junction.image = image_junction
 
+            if GlobalData.current_mode == 'red' or GlobalData.current_mode == 'flashing':
+                image_junction = PhotoImage(file=relative_to_assets(f"3way/{rotate}/3way_defult.png"))
+                self.label_image_junction.configure(image=image_junction)
+                self.label_image_junction.image = image_junction
 
-    #     self.data = {
-    #         "id": StringVar(),
-    #         "meal": StringVar(),
-    #         "type": StringVar(),
-    #         "g_id": StringVar(),
-    #         "check_in": StringVar(),
-    #         "room_id": StringVar(),
-    #         "reservation_date": StringVar(),
-    #         "check_out": StringVar(),
-    #     }
+        elif number_channel == 4:
+            global pathImg
+            if rotate == 0:
+              pathImg = f"4way/4way_{phase_number}.png"
+            elif rotate == 90:
+                if phase_number < 5:
+                    pathImg = f"4way/4way_{(phase_number%4)+1}.png"
+                elif phase_number == 5:
+                    pathImg = f"4way/4way_6.png"
+                elif phase_number == 6:
+                    pathImg = f"4way/4way_5.png"
+                elif phase_number == 7:
+                    pathImg = f"4way/4way_8.png"
+                elif phase_number == 8:
+                    pathImg = f"4way/4way_7.png"
 
-    #     self.initialize()
+            elif rotate == 180:
+                if phase_number == 1:
+                    pathImg = f"4way/4way_3.png"
+                elif phase_number == 2:
+                    pathImg = f"4way/4way_4.png"
+                elif phase_number == 3:
+                    pathImg = f"4way/4way_1.png"
+                elif phase_number == 4:
+                    pathImg = f"4way/4way_2.png"
+                else:
+                    pathImg = f"4way/4way_{phase_number}.png"
+            elif rotate == 270:
+                if phase_number == 1:
+                    pathImg = f"4way/4way_4.png"
+                elif phase_number == 2:
+                    pathImg = f"4way/4way_1.png"
+                elif phase_number == 3:
+                    pathImg = f"4way/4way_2.png"
+                elif phase_number == 4:
+                    pathImg = f"4way/4way_3.png"
+                elif phase_number == 5:
+                    pathImg = f"4way/4way_6.png"
+                elif phase_number == 6:
+                    pathImg = f"4way/4way_5.png"
+                elif phase_number == 7:
+                    pathImg = f"4way/4way_8.png"
+                elif phase_number == 8:
+                    pathImg = f"4way/4way_7.png"
 
-    #     self.canvas = Canvas(
-    #         self,
-    #         bg="#FFFFFF",
-    #         height=432,
-    #         width=797,
-    #         bd=0,
-    #         highlightthickness=0,
-    #         relief="ridge",
-    #     )
+            image_junction = PhotoImage(file=relative_to_assets(pathImg))
+            self.label_image_junction.configure(image=image_junction)
+            self.label_image_junction.image = image_junction
 
-    #     self.canvas.place(x=0, y=0)
-    #     self.canvas.create_rectangle(
-    #         40.0, 14.0, 742.0, 16.0, fill="#EFEFEF", outline=""
-    #     )
+            if GlobalData.current_mode == 'red' or GlobalData.current_mode == 'flashing':
+                image_junction = PhotoImage(file=relative_to_assets(f"4way/4way_defult"))
+                self.label_image_junction.configure(image=image_junction)
+                self.label_image_junction.image = image_junction
+    
+        
+    def setText(self,):
+        junction = GlobalData.junction
+        channel = GlobalData.channel
+        rotate = junction['rotate']
+        number_channel = junction['number_channel']
+        if rotate == 0:
+            for ch in channel:
+                if ch['order_number'] == 1:
+                    self.chanel_n.set(ch['name'])
+                elif ch['order_number'] == 2:
+                    self.chanel_e.set(ch['name'])
+                elif ch['order_number'] == 3:
+                    self.chanel_w.set(ch['name'])
+                elif ch['order_number'] == 4:
+                    self.chanel_s.set(ch['name'])
 
-    #     self.canvas.create_text(
-    #         116.0,
-    #         33.0,
-    #         anchor="nw",
-    #         text="Update Reservation",
-    #         fill="#5E95FF",
-    #         font=("Montserrat Bold", 26 * -1),
-    #     )
+            if number_channel == 3:
+                    self.chanel_s.set('')
 
-    #     self.canvas.create_text(
-    #         116.0,
-    #         65.0,
-    #         anchor="nw",
-    #         text="Change Details",
-    #         fill="#808080",
-    #         font=("Montserrat SemiBold", 16 * -1),
-    #     )
+        elif rotate == 90:
+            for ch in channel:
+                if ch['order_number'] == 1:
+                    self.chanel_e.set(ch['name'])
+                elif ch['order_number'] == 2:
+                    self.chanel_s.set(ch['name'])
+                elif ch['order_number'] == 3:
+                    self.chanel_n.set(ch['name'])
+                elif ch['order_number'] == 4:
+                    self.chanel_w.set(ch['name'])
 
-    #     self.button_image_1 = PhotoImage(file=relative_to_assets("button_1.png"))
-    #     button_1 = Button(
-    #         self,
-    #         image=self.button_image_1,
-    #         borderwidth=0,
-    #         highlightthickness=0,
-    #         command=lambda: self.parent.navigate("add"),
-    #         relief="flat",
-    #     )
-    #     button_1.place(x=40.0, y=33.0, width=53.0, height=53.0)
+            if number_channel == 3:
+                self.chanel_w.set('')
 
-    #     self.image_image_1 = PhotoImage(file=relative_to_assets("image_1.png"))
-    #     image_1 = self.canvas.create_image(145.0, 150.0, image=self.image_image_1)
+        elif rotate == 180:
+            for ch in channel:
+                if ch['order_number'] == 1:
+                    self.chanel_s.set(ch['name'])
+                elif ch['order_number'] == 2:
+                    self.chanel_w.set(ch['name'])
+                elif ch['order_number'] == 3:
+                    self.chanel_e.set(ch['name'])
+                elif ch['order_number'] == 4:
+                    self.chanel_n.set(ch['name'])
 
-    #     self.canvas.create_text(
-    #         60.0,
-    #         125.0,
-    #         anchor="nw",
-    #         text="Reservation ID",
-    #         fill="#5E95FF",
-    #         font=("Montserrat Bold", 14 * -1),
-    #     )
+            if number_channel == 3:
+                self.chanel_n.set('')
 
-    #     self.id_text = self.canvas.create_text(
-    #         60.0,
-    #         152.0,
-    #         anchor="nw",
-    #         text="Select record first...",
-    #         fill="#979797",
-    #         font=("Montserrat Bold", 18 * -1),
-    #     )
+        elif rotate == 270:
+            for ch in channel:
+                if ch['order_number'] == 1:
+                    self.chanel_w.set(ch['name'])
+                elif ch['order_number'] == 2:
+                    self.chanel_n.set(ch['name'])
+                elif ch['order_number'] == 3:
+                    self.chanel_s.set(ch['name'])
+                elif ch['order_number'] == 4:
+                    self.chanel_e.set(ch['name'])
 
-    #     self.image_image_2 = PhotoImage(file=relative_to_assets("image_2.png"))
-    #     image_2 = self.canvas.create_image(145.0, 246.0, image=self.image_image_2)
+            if number_channel == 3:
+                self.chanel_e.set('')
 
-    #     self.canvas.create_text(
-    #         60.0,
-    #         221.0,
-    #         anchor="nw",
-    #         text="Is Taking Meal",
-    #         fill="#5E95FF",
-    #         font=("Montserrat Bold", 14 * -1),
-    #     )
+    def loop(self):
 
-    #     self.entry_image_1 = PhotoImage(file=relative_to_assets("entry_1.png"))
-    #     entry_bg_1 = self.canvas.create_image(149.5, 258.0, image=self.entry_image_1)
-    #     entry_2 = Entry(
-    #         self,
-    #         bd=0,
-    #         bg="#EFEFEF",
-    #         highlightthickness=0,
-    #         font=("Montserrat Bold", 18 * -1),
-    #         foreground="#777777",
-    #         textvariable=self.data["meal"],
-    #     )
-    #     entry_2.place(x=60.0, y=246.0, width=179.0, height=22.0)
+        current_phase = GlobalData.current_phase
+        rotate = GlobalData.junction['rotate']
 
-    #     self.image_image_3 = PhotoImage(file=relative_to_assets("image_3.png"))
-    #     image_3 = self.canvas.create_image(145.0, 342.0, image=self.image_image_3)
+        if GlobalData.phase_changed:
+            self.changChangeImagePhase(current_phase,rotate)
 
-    #     self.canvas.create_text(
-    #         60.0,
-    #         317.0,
-    #         anchor="nw",
-    #         text="Type",
-    #         fill="#5E95FF",
-    #         font=("Montserrat Bold", 14 * -1),
-    #     )
+        if self.temp_rotate != rotate:
+            self.setText()
 
-    #     self.entry_image_2 = PhotoImage(file=relative_to_assets("entry_2.png"))
-    #     entry_bg_2 = self.canvas.create_image(149.5, 354.0, image=self.entry_image_2)
-    #     entry_3 = Entry(
-    #         self,
-    #         bd=0,
-    #         bg="#EFEFEF",
-    #         highlightthickness=0,
-    #         font=("Montserrat Bold", 18 * -1),
-    #         foreground="#777777",
-    #         textvariable=self.data["type"],
-    #     )
-    #     entry_3.place(x=60.0, y=342.0, width=179.0, height=22.0)
-
-    #     self.image_image_4 = PhotoImage(file=relative_to_assets("image_4.png"))
-    #     image_4 = self.canvas.create_image(391.0, 150.0, image=self.image_image_4)
-
-    #     self.canvas.create_text(
-    #         306.0,
-    #         125.0,
-    #         anchor="nw",
-    #         text="Guest Id",
-    #         fill="#5E95FF",
-    #         font=("Montserrat Bold", 14 * -1),
-    #     )
-
-    #     self.entry_image_3 = PhotoImage(file=relative_to_assets("entry_2.png"))
-    #     entry_bg_3 = self.canvas.create_image(395.5, 162.0, image=self.entry_image_3)
-    #     entry_4 = Entry(
-    #         self,
-    #         bd=0,
-    #         bg="#EFEFEF",
-    #         highlightthickness=0,
-    #         font=("Montserrat Bold", 18 * -1),
-    #         foreground="#777777",
-    #         textvariable=self.data["g_id"],
-    #     )
-    #     entry_4.place(x=306.0, y=150.0, width=179.0, height=22.0)
-
-    #     self.image_image_5 = PhotoImage(file=relative_to_assets("image_5.png"))
-    #     image_5 = self.canvas.create_image(391.0, 246.0, image=self.image_image_5)
-
-    #     self.canvas.create_text(
-    #         306.0,
-    #         221.0,
-    #         anchor="nw",
-    #         text="Check-in Time",
-    #         fill="#5E95FF",
-    #         font=("Montserrat Bold", 14 * -1),
-    #     )
-
-    #     self.entry_image_4 = PhotoImage(file=relative_to_assets("entry_2.png"))
-    #     entry_bg_4 = self.canvas.create_image(395.5, 258.0, image=self.entry_image_4)
-    #     entry_5 = Entry(
-    #         self,
-    #         bd=0,
-    #         bg="#EFEFEF",
-    #         highlightthickness=0,
-    #         font=("Montserrat Bold", 18 * -1),
-    #         foreground="#777777",
-    #         textvariable=self.data["check_in"],
-    #     )
-    #     entry_5.place(x=306.0, y=246.0, width=179.0, height=22.0)
-
-    #     self.image_image_6 = PhotoImage(file=relative_to_assets("image_6.png"))
-    #     image_6 = self.canvas.create_image(391.0, 342.0, image=self.image_image_6)
-
-    #     self.canvas.create_text(
-    #         306.0,
-    #         317.0,
-    #         anchor="nw",
-    #         text="Reservation Date",
-    #         fill="#5E95FF",
-    #         font=("Montserrat Bold", 14 * -1),
-    #     )
-
-    #     self.entry_image_5 = PhotoImage(file=relative_to_assets("entry_2.png"))
-    #     entry_bg_5 = self.canvas.create_image(395.5, 354.0, image=self.entry_image_5)
-    #     entry_6 = Entry(
-    #         self,
-    #         bd=0,
-    #         bg="#EFEFEF",
-    #         highlightthickness=0,
-    #         font=("Montserrat Bold", 18 * -1),
-    #         foreground="#777777",
-    #         textvariable=self.data["reservation_date"],
-    #     )
-    #     entry_6.place(x=306.0, y=342.0, width=179.0, height=22.0)
-
-    #     self.image_image_7 = PhotoImage(file=relative_to_assets("image_7.png"))
-    #     image_7 = self.canvas.create_image(637.0, 150.0, image=self.image_image_7)
-
-    #     self.canvas.create_text(
-    #         552.0,
-    #         125.0,
-    #         anchor="nw",
-    #         text="Room Id",
-    #         fill="#5E95FF",
-    #         font=("Montserrat Bold", 14 * -1),
-    #     )
-
-    #     self.entry_image_6 = PhotoImage(file=relative_to_assets("entry_2.png"))
-    #     entry_bg_6 = self.canvas.create_image(641.5, 162.0, image=self.entry_image_6)
-    #     entry_7 = Entry(
-    #         self,
-    #         bd=0,
-    #         bg="#EFEFEF",
-    #         highlightthickness=0,
-    #         font=("Montserrat Bold", 18 * -1),
-    #         foreground="#777777",
-    #         textvariable=self.data["room_id"],
-    #     )
-    #     entry_7.place(x=552.0, y=150.0, width=179.0, height=22.0)
-
-    #     self.image_image_8 = PhotoImage(file=relative_to_assets("image_8.png"))
-    #     image_8 = self.canvas.create_image(637.0, 246.0, image=self.image_image_8)
-
-    #     self.canvas.create_text(
-    #         552.0,
-    #         221.0,
-    #         anchor="nw",
-    #         text="Check Out Time",
-    #         fill="#5E95FF",
-    #         font=("Montserrat Bold", 14 * -1),
-    #     )
-
-    #     self.entry_image_7 = PhotoImage(file=relative_to_assets("entry_2.png"))
-    #     entry_bg_7 = self.canvas.create_image(641.5, 258.0, image=self.entry_image_7)
-    #     entry_8 = Entry(
-    #         self,
-    #         bd=0,
-    #         bg="#EFEFEF",
-    #         highlightthickness=0,
-    #         font=("Montserrat Bold", 18 * -1),
-    #         foreground="#777777",
-    #         textvariable=self.data["check_out"],
-    #     )
-    #     entry_8.place(x=552.0, y=246.0, width=179.0, height=22.0)
-
-    #     self.button_image_2 = PhotoImage(file=relative_to_assets("button_2.png"))
-    #     button_2 = Button(
-    #         self,
-    #         image=self.button_image_2,
-    #         borderwidth=0,
-    #         highlightthickness=0,
-    #         command=self.handle_update,
-    #         relief="flat",
-    #     )
-    #     button_2.place(x=570.0, y=318.0, width=144.0, height=48.0)
-
-    # def initialize(self):
-    #     self.selected_r_id = self.parent.selected_rid
-    #     self.reservation_data = self.parent.reservation_data
-
-    #     # Filter out all reservations for selected id reservation
-    #     self.selected_reservation_data = list(
-    #         filter(lambda x: str(x[0]) == self.selected_r_id, self.reservation_data)
-    #     )
-
-    #     if self.selected_reservation_data:
-    #         self.selected_reservation_data = self.selected_reservation_data[0]
-
-    #         self.canvas.itemconfigure(
-    #             self.id_text, text=self.selected_reservation_data[0]
-    #         )
-    #         self.data["g_id"].set(self.selected_reservation_data[1])
-    #         self.data["room_id"].set(self.selected_reservation_data[2])
-    #         self.data["check_in"].set(self.selected_reservation_data[3])
-    #         self.data["check_out"].set(self.selected_reservation_data[4])
-    #         self.data["meal"].set(self.selected_reservation_data[5])
-    #         self.data["reservation_date"].set(self.selected_reservation_data[3])
-
-    # def handle_update(self):
-
-    #     data = [
-    #         x
-    #         for x in [
-    #             self.data[label].get()
-    #             for label in ("g_id", "check_in", "room_id", "check_out", "meal")
-    #         ]
-    #     ]
-
-    #     # Update data and show alert
-    #     if db_controller.update_reservation(self.selected_r_id, *data):
-    #         messagebox.showinfo("Success", "Reservation Updated Successfully")
-    #         self.parent.navigate("view")
-
-    #         self.reset()
-
-    #     else:
-    #         messagebox.showerror(
-    #             "Error", "Error Updating Reservation. Please check all ids exist"
-    #         )
-
-    #     self.parent.refresh_entries()
-    # def reset(self):
-    #     # clear all entries
-    #     for label in self.data:
-    #         self.data[label].set("")
-
-    #     self.canvas.itemconfigure(
-    #         self.id_text, text="Select source first..."
-    #     )
+        self.tempPhase = current_phase
+        self.temp_rotate = rotate
+        self.label_image_junction.after(200,self.loop)

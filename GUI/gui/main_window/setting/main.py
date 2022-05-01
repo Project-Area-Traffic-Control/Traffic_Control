@@ -30,7 +30,6 @@ class Setting(Frame):
         self.ip=StringVar()
         self.password=StringVar()
         self.junction=StringVar()
-        self.loadData()
 
         self.configure(bg="#E0DADA")
 
@@ -46,6 +45,7 @@ class Setting(Frame):
         self.current_window.place(x=25, y=25, width=980.0, height=670.0)
 
         self.current_window.tkraise()
+        self.navigate("main")
 
     def navigate(self, name):
         # Hide all screens
@@ -59,13 +59,20 @@ class Setting(Frame):
             self.windows[name].reset_new_value()
         elif name == "edit_ip":
             self.windows[name].reset_new_value()
+        elif name == "edit_junction":
+            self.windows[name].loadData()
+        elif name == 'main':
+            self.loadData()
 
     def loadData(self):
         password = db_controller.getPassword()
         ip = db_controller.getIP()
         self.password.set(password)
-        self.junction.set("เเยกสุขสมาน")
+        junctionData = db_controller.getJunction()
+        self.junction.set(junctionData['name'])
         if ip != '':
             self.ip.set(ip)
         else:
             self.ip.set('กำหนด IP')
+
+
