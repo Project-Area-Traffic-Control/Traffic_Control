@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from tkinter import Frame, Canvas, Entry, StringVar, Text, Button, PhotoImage, messagebox
+from tkinter import Frame, Canvas, Entry, Label, StringVar, Text, Button, PhotoImage, messagebox
 from gui.main_window.setting.edit_ip.main import Edit_ip
 from gui.main_window.setting.edit_junction.main import Edit_junction
 from gui.main_window.setting.edit_password.gui import Edit_password
 
 from gui.main_window.setting.setting_main.gui import Setting_main
 import controller as db_controller
-
+import global_data as GlobalData
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -47,6 +47,15 @@ class Setting(Frame):
         self.current_window.tkraise()
         self.navigate("main")
 
+        self.loop_label = Label()
+        self.loop()
+
+    def loop(self):
+        self.junction.set(GlobalData.junction['name'])
+        # print(GlobalData.junction['name'])
+
+        self.loop_label.after(500,self.loop)
+
     def navigate(self, name):
         # Hide all screens
         for window in self.windows.values():
@@ -68,8 +77,7 @@ class Setting(Frame):
         password = db_controller.getPassword()
         ip = db_controller.getIP()
         self.password.set(password)
-        junctionData = db_controller.getJunction()
-        self.junction.set(junctionData['name'])
+
         if ip != '':
             self.ip.set(ip)
         else:

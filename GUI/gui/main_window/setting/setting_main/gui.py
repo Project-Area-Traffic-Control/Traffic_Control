@@ -41,8 +41,6 @@ class Setting_main(Frame):
             )
         canvas.place(x=0, y=0)
 
-            
-
 
         canvas1 = Canvas(
             self,

@@ -143,10 +143,10 @@ class FixtimeTabel(Frame):
             control.runThreading()
             
     def updateDataPlans(self):
-        self.plans_data = db_controller.getPlans()
+        GlobalData.plans_data = db_controller.getPlans()
             
     def setDataToTabel(self):
-        data = self.plans_data
+        data = GlobalData.plans_data
         self.deleteTabel()
         n=0
         select = []
@@ -213,6 +213,10 @@ class FixtimeTabel(Frame):
             self.updateDataPlans()
             self.loadDataToGlobal()
 
+            if showErr:
+                messagebox.showinfo(
+                        message=f"โหลดข้อมูลสำเร็จ",
+                    )
 
             return True
 
