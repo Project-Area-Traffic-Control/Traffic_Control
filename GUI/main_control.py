@@ -50,8 +50,6 @@ def loop():
     temp_phase = -1
     state_Flashing = False
 
-    print(current_plan['name'])
-
     while stop_thread:
 
         current_mode = GlobalData.current_mode
@@ -177,6 +175,10 @@ def reloadPattern():
     global current_plan
     global patterns
     global order 
+
+    if current_plan['name'] != 'ALLRED' and current_plan['name'] != 'FLASHING':
+        stop()
+        runThreading()
 
     current_plan = getCurrentPlan()
     # print(current_plan['name'])
