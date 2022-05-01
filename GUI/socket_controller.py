@@ -34,7 +34,6 @@ def disconnect():
 @sio.on('update:setting')
 def on_message(data):
     junctionID = GlobalData.junction['id']
-    print(data['junction_id'],junctionID)
     if str(data['junction_id']) == str(junctionID):
         status = loadDataToDB()
         print('reload')
@@ -44,11 +43,22 @@ def on_message(data):
 
 @sio.on('get:data')
 def on_message(data):
-    
     junctionID = GlobalData.junction['id']
     if str(data) == str(junctionID):
         print(data)
         sio.emit('update:data',{'junction_id' : GlobalData.junction['id'], 'phase': GlobalData.current_phase , 'mode': GlobalData.current_mode , 'Timer': GlobalData.timer})
+
+@sio.on('set:mode')
+def on_message(data):
+    junctionID = GlobalData.junction['id']
+    if str(data['junction_id']) == str(junctionID):
+        GlobalData.updateCurrentMode(data['mode'])
+
+sio.on('set:phase')
+def on_message(data):
+    junctionID = GlobalData.junction['id']
+    if str(data['junction_id']) == str(junctionID):
+        GlobalData.updateCurrentPhase(data['phase'])
 
 
 
@@ -60,7 +70,7 @@ def connect(ip):
 
 def disconnect():
     sio.disconnect()
-    
+
 
 def getStatus():
     global status_connect

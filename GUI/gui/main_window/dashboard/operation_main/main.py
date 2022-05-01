@@ -155,7 +155,6 @@ class OperationMain(Frame):
         GlobalData.updateCurrentMode('flashing')
   
 
-
     def my_time(self):
         time_string = time.strftime('%H : %M : %S') # time format 
         self.label_timer.config(text=time_string)

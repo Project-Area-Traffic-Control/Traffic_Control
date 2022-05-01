@@ -82,8 +82,6 @@ class Setting_main(Frame):
         canvas1.button_edit.place(x=760.0, y=25.0, anchor="nw")
 
 
-
-
         canvas2 = Canvas(
             self,
             bg="#FFFFFF",
@@ -122,8 +120,6 @@ class Setting_main(Frame):
             bg="#FFFFFF"
         )
         canvas2.button_edit.place(x=760.0, y=25.0, anchor="nw")
-
-
 
 
         canvas3 = Canvas(
