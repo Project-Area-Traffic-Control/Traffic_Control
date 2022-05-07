@@ -41,6 +41,7 @@ def loop():
     stop_thread = True
     temp_phase = -1
     state_flashing = False
+    GlobalData.updateTemp_mode('Test')
 
     getCurrentPlan()
 
