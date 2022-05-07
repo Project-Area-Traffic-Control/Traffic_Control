@@ -54,8 +54,9 @@ def on_message(data):
     if str(data['junction_id']) == str(junctionID):
         GlobalData.updateCurrentMode(data['mode'])
 
-sio.on('set:phase')
+@sio.on('set:phase')
 def on_message(data):
+    print(data)
     junctionID = GlobalData.junction['id']
     if str(data['junction_id']) == str(junctionID):
         GlobalData.updateCurrentPhase(data['phase'])

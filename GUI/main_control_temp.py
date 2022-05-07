@@ -49,142 +49,131 @@ def loop():
     
     temp_mode = -1
     temp_phase = -1
-    state_flashing = False
-
+    state_Flashing = False
 
     while stop_thread:
 
         current_mode = GlobalData.current_mode
         current_phase = GlobalData.current_phase
+        
+        if temp_mode != current_mode:
+            print('change mode to ',current_mode)
 
-        while GlobalData.current_mode == 'auto' and stop_thread:
-
-            t = GlobalData.timer
-            GlobalData.updateTimer(t-1)
-
-            if GlobalData.temp_mode != GlobalData.current_mode:
-                print('change mode to auto')
-                GlobalData.updateTemp_mode('auto')
-
-                order = 1
-                patterns = getPatterns()
-                phase = getPhaseFromPattern(patterns[order-1]['pattern'])
-                GlobalData.updateTimer(patterns[order-1]['duration'])
-
-                GlobalData.updateCurrentPhase(phase)
-                drivePhase(phase)
-
-            if GlobalData.timer <= 0:
-                order += 1
-                patterns = getPatterns()
-                if order > len(patterns):
+            if  current_mode == 'auto':
+                if current_plan['name'] != 'ALLRED' and current_plan['name'] != 'FLASHING':
+                    temp_auto = 'auto'
                     order = 1
-                phase = getPhaseFromPattern(patterns[order-1]['pattern'])
+                    if GlobalData.temp_mode == 'manual':
+                        setYellow()
+                        pattern = patterns[order-1]['pattern']
+                        phase = pattern[8]
+                        drivePhaseAuto(phase)
+                        driveAuto(patterns[order-1]['pattern'])
+                    
+                    if GlobalData.temp_mode == 'red' or GlobalData.temp_mode == 'flashing':
+                        drivePhaseAuto(current_phase)
+                        
+                    GlobalData.updateTimer(patterns[order-1]['duration'])
 
-                GlobalData.phase_changed = False
-                setYellowPhase(GlobalData.current_phase)
-                timerYellow = current_plan['yellow_time']
-                GlobalData.updateTimer(timerYellow)
-                while timerYellow > 0:
-                    GlobalData.updateTimer(timerYellow)
-                    timerYellow -= 1
-                    time.sleep(1)
-                GlobalData.phase_changed = True
-
-                GlobalData.updateCurrentPhase(phase)
-                GlobalData.updateTimer(patterns[order-1]['duration'])
-                drivePhase(phase)
-
-            
-            time.sleep(1)
-
-        while GlobalData.current_mode == 'manual' and stop_thread:
-            current_phase = GlobalData.current_phase
-
-            t = GlobalData.timer
-            GlobalData.updateTimer(t+1)
-
-            if GlobalData.temp_mode != GlobalData.current_mode:
-                print('change mode to manual')
-                GlobalData.updateTemp_mode('manual')
+                else:
+                    GlobalData.updateTimer(0)
+                    driveAllRed()
                 
+                
+            elif current_mode == 'manual':
                 GlobalData.updateTimer(0)
                 GlobalData.updateCurrentPhase(current_phase)
                 drivePhase(current_phase)
 
-            if temp_phase != current_phase:
-                print('change phase from ',temp_phase, ' to ' , GlobalData.current_phase)
-                GlobalData.phase_changed = False
-                setYellowPhase(temp_phase)
-                time.sleep(current_plan['yellow_time'])
-                GlobalData.phase_changed = True
-
+            elif current_mode == 'red':
                 GlobalData.updateTimer(0)
-                GlobalData.updateCurrentPhase(current_phase)
-                drivePhase(current_phase)
+                if GlobalData.temp_mode == 'manual' or GlobalData.temp_mode == 'auto' :
+                    if current_plan['name'] != 'ALLRED' and current_plan['name'] != 'FLASHING':
+                        GlobalData.phase_changed = False
+                        setYellow()
+                        GlobalData.phase_changed = True
+                driveAllRed()
+            elif current_mode == 'flashing':
+                GlobalData.updateTimer(0)
+                if GlobalData.temp_mode == 'manual' or GlobalData.temp_mode == 'auto':
+                    GlobalData.phase_changed = False
+                    setYellow()
+                    delayRed()
+                    GlobalData.phase_changed = True
 
-            temp_phase = current_phase
+        
+        if temp_phase != current_phase:
+            print('change phase to ', current_phase)
+            if current_mode == 'manual':
+                drivePhaseManual(GlobalData.current_phase)
+                GlobalData.updateTimer(0)
+            elif current_mode == 'auto':
+                if current_plan['name'] != 'ALLRED' and current_plan['name'] != 'FLASHING':
+                    drivePhaseAuto(GlobalData.current_phase)
+                 
+
+        if current_mode == 'manual' or current_mode == 'auto':
+            now = datetime.datetime.now()
+            if now - datetime.timedelta(seconds=1) >= temp_now_1_sec: 
+                temp_now_1_sec = datetime.datetime.now()
+
+                if current_mode == 'manual':
+                    t = GlobalData.timer
+                    GlobalData.updateTimer(t+1)
+
+                if current_mode == 'auto' and current_plan['name'] != 'ALLRED' and current_plan['name'] != 'FLASHING':
+                    t = GlobalData.timer
+                    GlobalData.updateTimer(t-1)
+
+                    if GlobalData.timer <= 0:
+                        
+                        if temp_auto == 'auto':
+                            setYellowPhase(GlobalData.current_phase)
+                            GlobalData.updateTimer(current_plan['yellow_time'])
+                            temp_auto = 'yellow'
+
+                        elif temp_auto == 'yellow':
+                            setAllRed()
+                            GlobalData.updateTimer(current_plan['delay_red_time'])
+                            temp_auto = 'red'
+
+                        elif temp_auto == 'red':
+                            order += 1
+                            if order > len(patterns):
+                                order = 1
+                            driveAuto(patterns[order-1]['pattern'])
+                            GlobalData.updateTimer(patterns[order-1]['duration'])
+                            temp_auto = 'auto'
+
+                        
+                    
+                
+        if current_mode == 'flashing' or current_plan['name'] == 'FLASHING':
+            now = datetime.datetime.now()
+            if now - datetime.timedelta(milliseconds=500) >= temp_now_500_msec: 
+                temp_now_500_msec = datetime.datetime.now()
+                driveFlashing(state_Flashing)
+                state_Flashing = not state_Flashing
+
+
+
+        now = datetime.datetime.now()
+        end = current_plan['end']
+        now = datetime.datetime.now()
+        t = now.replace(hour=0,minute=0,second=59,microsecond=999999)
+        end = t + end
+
+        if end.time() < datetime.datetime.now().time():
+            print('Reload')
+            reloadPattern()
           
-            time.sleep(1)
-
-        while GlobalData.current_mode == 'flashing' and stop_thread:
             
-            if GlobalData.temp_mode != GlobalData.current_mode:
-                print('change mode to flashing')
-                GlobalData.updateTemp_mode('flashing')
-                GlobalData.updateTimer(0)
-
-            driveFlashing(state_flashing)
-            state_flashing = not state_flashing
-            time.sleep(1)
-        
-        if GlobalData.current_mode == 'red' and (GlobalData.temp_mode != GlobalData.current_mode):
-            print('change mode to red')
-            GlobalData.updateTimer(0)
-            if GlobalData.temp_mode == 'manual' or GlobalData.temp_mode == 'auto':
-                GlobalData.phase_changed = False
-                setYellowPhase(GlobalData.current_phase)
-                time.sleep(current_plan['yellow_time'])
-                GlobalData.phase_changed = True
-                
-            setAllRed()
-            GlobalData.updateTemp_mode('red')
-        
-    
-
-
         temp_mode = current_mode
         temp_phase = current_phase
-
         time.sleep(0.001)
 
 
-def getPatterns():
-    plan = getCurrentPlan()
-    return db_controller.getPatternByPlanID(plan['id'])
 
-def getPattern(order):
-    plan = getCurrentPlan()
-    patterns = db_controller.getPatternByPlanID(plan['id'])
-    return patterns[order-1]['pattern']
-
-def getPhaseFromPattern(pattern):
-    phase = pattern[8]
-    return int(phase)
-
-def getCurrentPlan():
-    data = db_controller.getPlans()
-    for item in data:
-        start = item['start']
-        end = item['end']
-        now = datetime.datetime.now()
-        t1 = now.replace(hour=0,minute=0,second=0,microsecond=0)
-        t2 = now.replace(hour=0,minute=0,second=59,microsecond=999999)
-        start = t1 + start
-        end = t2 + end
-        # print(start.time(),now.time(),end.time())
-        if start.time() <= now.time() and now.time() <= end.time():
-            return item
 
 def reloadPattern():
     global current_plan
@@ -204,6 +193,19 @@ def reloadPattern():
     order = 0
 
 
+def getCurrentPlan():
+    data = db_controller.getPlans()
+    for item in data:
+        start = item['start']
+        end = item['end']
+        now = datetime.datetime.now()
+        t1 = now.replace(hour=0,minute=0,second=0,microsecond=0)
+        t2 = now.replace(hour=0,minute=0,second=59,microsecond=999999)
+        start = t1 + start
+        end = t2 + end
+        # print(start.time(),now.time(),end.time())
+        if start.time() <= now.time() and now.time() <= end.time():
+            return item
 
 def driveAuto(pattern):
     phase = pattern[8]
@@ -211,6 +213,7 @@ def driveAuto(pattern):
     GlobalData.updateCurrentPhase(phase)
     GlobalData.temp_phase = GlobalData.current_phase
      
+
 def drivePhaseAuto(phase):
     drivePhase(phase)
     
@@ -224,7 +227,6 @@ def drivePhaseManual(phase):
     
 
 def drivePhase(phase):
-    print('Drive phase : ',phase)
     channel = GlobalData.channel
     # if GlobalData.junction['number_channel'] == 3:
     #     if phase == 1:
@@ -256,7 +258,6 @@ def drivePhase(phase):
 
 
 def setYellowPhase(phase):
-    print('Set Yellow : ',phase)
     channel = GlobalData.channel
     # if GlobalData.junction['number_channel'] == 3:
     #     if phase == 1:

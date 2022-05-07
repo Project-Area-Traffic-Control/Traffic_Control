@@ -130,7 +130,7 @@ class OperationManual(Frame):
                 self.disable(number_channel,True)
 
         if GlobalData.phase_changed:
-            self.setBorder(number_channel,current_phase)
+            self.setBorder(number_channel,GlobalData.current_phase)
             
         self.temp_numberOfJunction = number_channel
         self.temp_rotate = junction['rotate']
