@@ -5,7 +5,7 @@ import threading
 import time
 import controller as db_controller
 import global_data as GlobalData
-# import trafficLightController as Traffic_control
+import trafficLightController as Traffic_control
 
 def runThreading():
     global thread
