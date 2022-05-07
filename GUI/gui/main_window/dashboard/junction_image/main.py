@@ -166,7 +166,7 @@ class JunctionImage(Frame):
             self.label_image_junction.configure(image=image_junction)
             self.label_image_junction.image = image_junction
 
-            if GlobalData.current_mode == 'red' or GlobalData.current_mode == 'flashing' or GlobalData.current_plan_name == 'ALLRED' or GlobalData.current_plan_name == 'FLASHING':
+            if (GlobalData.current_mode == 'red' or GlobalData.current_mode == 'flashing' or GlobalData.current_plan_name == 'ALLRED' or GlobalData.current_plan_name == 'FLASHING') and GlobalData.current_mode != 'manual':
                 image_junction = PhotoImage(file=relative_to_assets(f"4way/4way_defult.png"))
                 self.label_image_junction.configure(image=image_junction)
                 self.label_image_junction.image = image_junction
@@ -240,9 +240,6 @@ class JunctionImage(Frame):
 
         if GlobalData.phase_changed:
             self.changChangeImagePhase(current_phase,rotate)
-            if self.temp_phase != current_phase:
-                socket.emitPhase(current_phase)
-                self.temp_phase = current_phase
 
         
         self.setText()

@@ -1,3 +1,4 @@
+import datetime
 import re
 from socket import socket
 import time
@@ -6,6 +7,7 @@ import global_data as GlobalData
 import controller as db_controller
 import api_controller as api
 import main_control as control
+
 
 sio = socketio.Client()
 
@@ -30,7 +32,6 @@ def disconnect():
     status_connect = False
     print("I'm disconnected!")
 
-
 @sio.on('update:setting')
 def on_message(data):
     junctionID = GlobalData.junction['id']
@@ -39,24 +40,32 @@ def on_message(data):
         print('reload')
         if status:
             control.stop()
+            t = 3
+            while t > 0:
+                control.driveFlashing(True)
+                time.sleep(0.5)
+                control.driveFlashing(False)
+                time.sleep(0.5)
+                t -= 1
             control.runThreading()
 
 @sio.on('get:data')
 def on_message(data):
     junctionID = GlobalData.junction['id']
     if str(data) == str(junctionID):
-        print(data)
+        print('ON get:data',data)
         sio.emit('update:data',{'junction_id' : GlobalData.junction['id'], 'phase': GlobalData.current_phase , 'mode': GlobalData.current_mode , 'Timer': GlobalData.timer})
 
 @sio.on('set:mode')
 def on_message(data):
+    print('ON set:mode ',data)
     junctionID = GlobalData.junction['id']
     if str(data['junction_id']) == str(junctionID):
         GlobalData.updateCurrentMode(data['mode'])
 
 @sio.on('set:phase')
 def on_message(data):
-    print(data)
+    print('ON set:phase ',data)
     junctionID = GlobalData.junction['id']
     if str(data['junction_id']) == str(junctionID):
         GlobalData.updateCurrentPhase(data['phase'])
@@ -81,12 +90,14 @@ def getStatus():
 def emitPhase(phase):
     global status_connect
     if status_connect:
-        print('Emit',phase)
+        print('Emit phase',phase)
         sio.emit('update:phase',{'junction_id' : GlobalData.junction['id'], 'phase': phase})
 def emitMode(mode):
+    print('Emit mode',mode)
     if status_connect:
         sio.emit('update:mode',{'junction_id' : GlobalData.junction['id'], 'mode': mode})
 def emitTimer(timer):
+    # print('Emit timer',timer)
     if status_connect:
         sio.emit('update:timer',{'junction_id' : GlobalData.junction['id'], 'timer': timer})
 
@@ -111,6 +122,7 @@ def loadDataToDB():
     result = api.getFixtimeTabel(junctionData['id'])
     if result:
         db_controller.deleteAllPlan()
+        time.sleep(0.01)
         db_controller.deleteAllPattern()
         n = 0
         for item in result:
@@ -125,6 +137,7 @@ def loadDataToDB():
                 'delay_red_time': item['plan']['delay_red_time'],
                 'plan_id': item['plan']['id'],
             }
+            time.sleep(0.01)
             db_controller.addPlan(data)
 
             patterns = api.getPlanByID(data['plan_id'])['pattern']
@@ -135,16 +148,19 @@ def loadDataToDB():
                     "order": pattern['order'],
                     "duration": pattern['duration']
                 }
+                time.sleep(0.01)
                 db_controller.addPattern(dataPattern)
 
             n += 1
 
-        
+        time.sleep(0.01)
         loadChanelToDB()
+        time.sleep(0.01)
         loadJunctionDataToDB()
+        time.sleep(0.01)
         updateDataPlans()
+        time.sleep(0.01)
 
-        time.sleep(0.2)
         loadDataToGlobal()
 
         return True
@@ -155,43 +171,45 @@ def updateDataPlans():
     GlobalData.plans_data = db_controller.getPlans()
 
 def loadChanelToDB():
-        junctionData = GlobalData.junction
-        result = api.getChannels(junctionData['id'])
-        db_controller.deleteAllChannel()
-        for item in result:
-            global port_forward
-            global port_right
-            port_forward = 0
-            port_right = 0
+    junctionData = GlobalData.junction
+    result = api.getChannels(junctionData['id'])
+    db_controller.deleteAllChannel()
+    for item in result:
+        global port_forward
+        global port_right
+        port_forward = 0
+        port_right = 0
 
-            for phase in item['phase']:
-     
+        for phase in item['phase']:
+    
 
-                if phase['type'] == 'FORWARD':
-                    port_forward = phase['port_number']
-                elif phase['type'] == 'TURN_RIGHT':
-                    port_right = phase['port_number']
+            if phase['type'] == 'FORWARD':
+                port_forward = phase['port_number']
+            elif phase['type'] == 'TURN_RIGHT':
+                port_right = phase['port_number']
 
-            data = {
-                "order_number": item['order'],
-                "name":  item['name'],
-                "port_forward": port_forward,
-                "port_right": port_right
-            }
-            db_controller.addChannel(data)
+        data = {
+            "order_number": item['order'],
+            "name":  item['name'],
+            "port_forward": port_forward,
+            "port_right": port_right
+        }
+        db_controller.addChannel(data)
 
 def loadDataToGlobal():
-        GlobalData.updateJunction()
-        GlobalData.updateChannel()
-        GlobalData.updatePlansData()
+    GlobalData.updateJunction()
+    GlobalData.updateChannel()
+    GlobalData.updatePlansData()
+
 
 def loadJunctionDataToDB():
-        new_junction = api.getJunctionByID(GlobalData.junction['id'])
-        data  = {
-            'id': new_junction['id'],
-            'name': new_junction['name'],
-            'number_channel': new_junction['number_channel'],
-            'rotate': new_junction['rotate']
-        }
-        print(data)
-        db_controller.updateJunction(data)
+    new_junction = api.getJunctionByID(GlobalData.junction['id'])
+    data  = {
+        'id': new_junction['id'],
+        'name': new_junction['name'],
+        'number_channel': new_junction['number_channel'],
+        'rotate': new_junction['rotate']
+    }
+    print(data)
+    db_controller.updateJunction(data)
+

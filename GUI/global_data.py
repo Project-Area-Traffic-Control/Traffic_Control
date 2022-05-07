@@ -1,7 +1,11 @@
+import datetime
+import time
 import controller as db_controller
 import socket_controller as socket
 
+
 global current_phase
+global current_plan
 global temp_phase
 global current_mode
 global temp_mode
@@ -9,6 +13,7 @@ global current_plan_name
 global timer
 global phase_changed
 global plans_data
+global ip_server
 
 global junction 
 global channel
@@ -24,18 +29,31 @@ phase_changed = True
 
 def updateJunction():
     global junction 
+    global ip_server
+    time.sleep(0.01)
     junction = db_controller.getJunction()
+    time.sleep(0.01)
+    ip_server = db_controller.getIP()
 def updateChannel():
     global channel 
+    time.sleep(0.01)
     channel = db_controller.getChannels()
 def updatePlansData():
     global plans_data
-    plans_data = db_controller.getPlans()
+    time.sleep(0.01)
+    data = db_controller.getPlans()
+    plans_data = data
+
+
 
 updateJunction()
 updateChannel()
 updatePlansData()
 
+
+def updateCurrentPlan(plan):
+    global current_plan
+    current_plan = plan
 
 def updatePhase_changed(data):
     global phase_changed
@@ -50,7 +68,7 @@ def updateCurrentPhase(newPhase):
 def updateCurrentMode(newMode):
     global current_mode
     global temp_mode
-    socket.emitMode(newMode)
+    # socket.emitMode(newMode)
     # temp_mode = current_mode
     current_mode = newMode
 
@@ -67,3 +85,19 @@ def updateTimer(newtime):
     socket.emitTimer(newtime)
     timer = newtime
 
+
+
+def updateCurrentPlanFromDB():
+
+    data = db_controller.getPlans()
+    for item in data:
+        start = item['start']
+        end = item['end']
+        now = datetime.datetime.now()
+        t1 = now.replace(hour=0,minute=0,second=0,microsecond=0)
+        t2 = now.replace(hour=0,minute=0,second=59,microsecond=999999)
+        start = t1 + start
+        end = t2 + end
+        # print(start.time(),now.time(),end.time())
+        if start.time() <= now.time() and now.time() <= end.time():
+            updateCurrentPlan(item)

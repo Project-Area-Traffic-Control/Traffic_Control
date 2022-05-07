@@ -127,7 +127,7 @@ class Dashboard(Frame):
         self.label_time.after(500,self.updateSecond)
 
     def connect_to_server(self):
-        ip = db_controller.getIP()
+        ip = GlobalData.ip_server
         try:
             if not socket.getStatus():
                 socket.connect(ip)

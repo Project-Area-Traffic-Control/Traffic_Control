@@ -140,6 +140,13 @@ class FixtimeTabel(Frame):
         status = self.loadDataToDB(True)
         if status:
             control.stop()
+            t = 3
+            while t > 0:
+                control.driveFlashing(True)
+                time.sleep(0.5)
+                control.driveFlashing(False)
+                time.sleep(0.5)
+                t -= 1
             control.runThreading()
             
     def updateDataPlans(self):
