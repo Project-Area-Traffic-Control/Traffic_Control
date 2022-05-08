@@ -118,6 +118,7 @@ def loop():
                         GlobalData.updateTimer(timerYellow)
                         timerYellow -= 1
                         time.sleep(1)
+                    driveAllRed()
                     time.sleep(delay_red)
 
                     GlobalData.updateCurrentPhase(phase)
