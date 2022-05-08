@@ -61,14 +61,14 @@ def updatePhase_changed(data):
 
 def updateCurrentPhase(newPhase):
     global current_phase
-    global temp_phase
-    temp_phase = current_phase
+    global phase_changed
+    phase_changed = False
     current_phase = newPhase
 
 def updateCurrentMode(newMode):
     global current_mode
     global temp_mode
-    # socket.emitMode(newMode)
+    socket.emitMode(newMode)
     # temp_mode = current_mode
     current_mode = newMode
 

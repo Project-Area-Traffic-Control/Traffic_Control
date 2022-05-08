@@ -5,7 +5,9 @@ import threading
 import time
 import controller as db_controller
 import global_data as GlobalData
+import socket_controller as socket
 import trafficLightController as Traffic_control
+
 
 def runThreading():
     global thread
@@ -78,6 +80,7 @@ def loop():
                     GlobalData.updateTimer(patterns[order-1]['duration'])
 
                     GlobalData.updateCurrentPhase(phase)
+                    GlobalData.phase_changed = True
                     drivePhase(phase)
 
             else:
@@ -97,6 +100,7 @@ def loop():
                     GlobalData.updateTimer(patterns[order-1]['duration'])
 
                     GlobalData.updateCurrentPhase(phase)
+                    GlobalData.phase_changed = True
                     drivePhase(phase)
 
                 if GlobalData.timer <= 0:
@@ -117,9 +121,10 @@ def loop():
                         timerYellow -= 1
                         time.sleep(1)
                     time.sleep(delay_red)
+
+                    GlobalData.updateCurrentPhase(phase)
                     GlobalData.phase_changed = True
                     
-                    GlobalData.updateCurrentPhase(phase)
                     GlobalData.updateTimer(patterns[order-1]['duration'])
                     drivePhase(phase)
 
@@ -138,6 +143,7 @@ def loop():
                 
                 GlobalData.updateTimer(0)
                 GlobalData.updateCurrentPhase(current_phase)
+                GlobalData.phase_changed = True
                 drivePhase(current_phase)
                 temp_phase = current_phase
 
@@ -146,10 +152,10 @@ def loop():
                 GlobalData.phase_changed = False
                 setYellowPhase(temp_phase)
                 time.sleep(delay_yellow)
-                GlobalData.phase_changed = True
-
+                
                 GlobalData.updateTimer(0)
                 GlobalData.updateCurrentPhase(current_phase)
+                GlobalData.phase_changed = True
                 drivePhase(current_phase)
 
             temp_phase = current_phase
@@ -226,6 +232,7 @@ def getCurrentPlan():
 def drivePhase(phase):
     print('Drive phase : ',phase)
     channel = GlobalData.channel
+    socket.emitPhase(phase)
     if GlobalData.junction['number_channel'] == 3:
         if phase == 1:
             Traffic_control.setLightOnList([channel[0]['port_right']],'g')

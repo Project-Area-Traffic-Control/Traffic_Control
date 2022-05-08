@@ -240,10 +240,7 @@ class JunctionImage(Frame):
 
         if GlobalData.phase_changed:
             self.changChangeImagePhase(current_phase,rotate)
-
         
         self.setText()
 
-        
-        self.temp_rotate = rotate
         self.label_image_junction.after(200,self.loop)
