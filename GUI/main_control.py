@@ -284,11 +284,11 @@ def setYellowPhase(phase):
         elif phase == 4:
             Traffic_control.setLightOnList([channel[3]['port_right'],channel[3]['port_foward']],'y')
         elif phase == 5:
-            Traffic_control.setLightOnList([channel[0]['port_foward'],channel[2]['port_foward']],'y')
+            Traffic_control.setLightOnList([channel[0]['port_right'],channel[2]['port_foward']],'y')
         elif phase == 6:
             Traffic_control.setLightOnList([channel[1]['port_foward'],channel[3]['port_foward']],'y')
         elif phase == 7:
-            Traffic_control.setLightOnList([channel[0]['port_right'],channel[2]['port_right']],'y')
+            Traffic_control.setLightOnList([channel[0]['port_foward'],channel[2]['port_right']],'y')
         elif phase == 8:
             Traffic_control.setLightOnList([channel[1]['port_right'],channel[3]['port_right']],'y')
 
