@@ -37,7 +37,7 @@ def loop():
 
     plan_name = 'Test'
     temp_plan_id = -1
-    delay_red = 0
+    delay_red = 1
     delay_yellow = 3
     order = 1
     stop_thread = True
