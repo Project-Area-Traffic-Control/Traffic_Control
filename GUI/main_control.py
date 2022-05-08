@@ -1,5 +1,3 @@
-
-from cmath import phase
 import datetime
 import threading
 import time
@@ -218,8 +216,8 @@ def getCurrentPlan():
         end = t2 + end
         # print(start.time(),now.time(),end.time())
         if start.time() <= now.time() and now.time() <= end.time():
-            delay_yellow = item['yellow_time']
-            delay_red = item['delay_red_time']
+            delay_yellow = int(item['yellow_time'])
+            delay_red = int(item['delay_red_time'])
             if item['id'] != temp_plan_id:
                 temp_plan_id = item['id']  
                 order = 1
