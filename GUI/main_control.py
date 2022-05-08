@@ -252,11 +252,11 @@ def drivePhase(phase):
         elif phase == 4:
             Traffic_control.setLightOnList([channel[3]['port_right'],channel[3]['port_foward']],'g')
         elif phase == 5:
-            Traffic_control.setLightOnList([channel[0]['port_foward'],channel[2]['port_foward']],'g')
+            Traffic_control.setLightOnList([channel[0]['port_right'],channel[2]['port_foward']],'g')
         elif phase == 6:
             Traffic_control.setLightOnList([channel[1]['port_foward'],channel[3]['port_foward']],'g')
         elif phase == 7:
-            Traffic_control.setLightOnList([channel[0]['port_right'],channel[2]['port_right']],'g')
+            Traffic_control.setLightOnList([channel[0]['port_foward'],channel[2]['port_right']],'g')
         elif phase == 8:
             Traffic_control.setLightOnList([channel[1]['port_right'],channel[3]['port_right']],'g')
 
